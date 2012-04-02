@@ -9,6 +9,6 @@
         for="..interfaces.IZipFolder"
         name="zipfiles"
         class=".zipper.Zipper"
-        permission="zope2.Public"/>
+        permission="ims.CanZip"/>
     
 </configure>

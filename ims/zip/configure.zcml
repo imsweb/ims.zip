@@ -6,6 +6,12 @@
     i18n_domain="ims.zip">
 
   <five:registerPackage package="." initialize=".initialize" />
+
+  <permission
+    id="ims.CanZip"
+    title="ims.zip: can zip"
+    />
+
   <include package=".browser" />
 
   <adapter
