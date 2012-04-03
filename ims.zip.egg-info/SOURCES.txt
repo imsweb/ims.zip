@@ -17,6 +17,10 @@ ims.zip.egg-info/requires.txt
 ims.zip.egg-info/top_level.txt
 ims/zip/__init__.py
 ims/zip/adapters.py
+ims/zip/configure.zcml
 ims/zip/interfaces.py
-ims/zip/utility.py
+ims/zip/permissions.py
 ims/zip/browser/__init__.py
+ims/zip/browser/configure.zcml
+ims/zip/browser/zipper.py
+ims/zip/profiles/default/actions.xml

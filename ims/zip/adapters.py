@@ -1,6 +1,6 @@
 from zope import interface, component
 from Products.CMFCore.interfaces import ISiteRoot
-from plone.app.blob.interfaces import IATBlob
+from plone.app.blob.interfaces import IATBlob, IATBlobImage
 from Products.ATContentTypes.interfaces.file import IATFile
 from ims.zip.interfaces import IZippable
 
@@ -16,22 +16,22 @@ class AdapterBase(object):
 class ATBlobZip(AdapterBase):
     """ for blobbable files """
     def getZippable(self):
-      return self.context.getFile().data
+      # plone.app.blob does the icky work for us even though they hate this method
+      # it does load everything in mem but don't we have to?
+      return self.context.get_data()
 
 class ATFileZip(AdapterBase):
     """ for ATFile type """
     def getZippable(self):
-      return self.context.getFile().data
+      return self.context.get_data()
 
 class ATImageZip(AdapterBase):
     """ for ATImage type """
     def getZippable(self):
-      img = self.context.getImage()
-      try:
-        img = img.getBlob().open('r').read()
-      except AttributeError:
-        pass
-      return img
+      if IATBlobImage.providedBy(self.context):
+          return self.context.getPrimaryField().tag(self.context)
+      else:
+          return self.context.get_data()
 
 class ATDocumentZip(AdapterBase):
      """ for ATDocument type"""
