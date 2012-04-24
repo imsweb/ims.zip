@@ -23,7 +23,7 @@
    <property name="title" i18n:translate="">Unzip</property>
    <property name="description" i18n:translate="">Unzip files into a folder</property>
    <property name="url_expr">
-     string:${plone_context_state/canonical_object_url}/@@zipfiles
+     string:${plone_context_state/canonical_object_url}/@@unzip
    </property>
    <property name="icon_expr"></property>
    <property name="available_expr">
