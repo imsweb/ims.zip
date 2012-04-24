@@ -62,8 +62,10 @@ class Unzipper(BrowserView):
     ob.setImage(stream)
     ob.reindexObject()
       
-  def createDocument(self, parent, id, stream):      
+  def createDocument(self, parent, id, stream):  
+    id = '.' in id and '.'.join(id.split('.')[:-1]) or id
     parent.invokeFactory('Document',id)
     ob=parent[id]
     ob.setText(stream,mimetype="text/html")
+    ob.setTitle
     ob.reindexObject()
