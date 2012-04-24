@@ -67,5 +67,5 @@ class Unzipper(BrowserView):
     parent.invokeFactory('Document',id)
     ob=parent[id]
     ob.setText(stream,mimetype="text/html")
-    ob.setTitle
+    ob.setTitle(id)
     ob.reindexObject()
