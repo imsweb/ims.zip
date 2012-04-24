@@ -9,6 +9,15 @@
         for="..interfaces.IZipFolder"
         name="zipfiles"
         class=".zipper.Zipper"
-        permission="ims.CanZip"/>
+        permission="ims.CanZip"
+        />
+
+    <browser:page
+        for="..interfaces.IZipFolder"
+        name="unzip"
+        class=".unzipper.Unzipper"
+        permission="cmf.ModifyPortalContent"
+        template="unzipper.pt"
+        />
     
 </configure>

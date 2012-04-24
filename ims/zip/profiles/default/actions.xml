@@ -18,4 +18,21 @@
    <property name="visible">True</property>
   </object>
  </object>
+ <object name="object" meta_type="CMF Action Category">
+  <object name="zip" meta_type="CMF Action" i18n:domain="ims.zip">
+   <property name="title" i18n:translate="">Unzip</property>
+   <property name="description" i18n:translate="">Unzip files into a folder</property>
+   <property name="url_expr">
+     string:${plone_context_state/canonical_object_url}/@@zipfiles
+   </property>
+   <property name="icon_expr"></property>
+   <property name="available_expr">
+     python:plone_context_state.is_folderish() or plone_context_state.is_default_page()
+   </property>
+   <property name="permissions">
+    <element value="ims.zip: can unzip"/>
+   </property>
+   <property name="visible">True</property>
+  </object>
+ </object>
 </object>
