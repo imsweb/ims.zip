@@ -15,10 +15,9 @@
 <div metal:fill-slot="main">
   <fieldset>
     <legend>Import a zip file</legend>
-    <form enctype="multipart/form-data" tal:attributes="action string:$portal_url/@@unzip" method="POST">
+    <form enctype="multipart/form-data" tal:attributes="action string:${here/absolute_url}/@@unzip" method="POST">
       <label for="file">File</label><br/>
       <input type="file" name="file"/><br/><br/>
-      <input type="hidden" name="folder" tal:attributes="value here/getId"/>
 
       <input type="hidden" name="form.submitted" value="1"/>
       <input type="submit" value="Submit" class="context"/>

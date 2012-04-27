@@ -16,11 +16,10 @@ class Unzipper(BrowserView):
     form = self.request.form
     if 'form.submitted' in form:
       zipf = self.request.form.get('file','')
-      folder = self.request.form.get('folder','')
-      return self.unzip(zipf,folder)
+      return self.unzip(zipf)
     return self.index()
 
-  def unzip(self, zipf, init):
+  def unzip(self, zipf):
     portal = component.getUtility(ISiteRoot)
     mimereg = getToolByName(portal,'mimetypes_registry')
     zipper = zipfile.ZipFile(zipf, 'r')
@@ -28,7 +27,7 @@ class Unzipper(BrowserView):
     for name in zipper.namelist():
       path,id = os.path.split(name)
       stream = zipper.read(name)
-      curr = self.context[init]
+      curr = self.context
       for folder in [f for f in path.split('/') if f]:
         try:
           curr = curr[folder]
@@ -48,7 +47,7 @@ class Unzipper(BrowserView):
       factory(curr, id, stream)
       
       self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
-    return self.context[init]()
+    return self.context()
       
   def createFile(self, parent, id, stream):
     parent.invokeFactory('File',id)
