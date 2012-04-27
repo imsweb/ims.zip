@@ -36,9 +36,10 @@ class Zipper(BrowserView):
     content = cat(path=base_path,object_provides=IZippable.__identifier__)
     for c in content:
       rel_path = c.getPath().split(base_path)[1:]
-      zip_path = os.path.join(*rel_path)
-      adapter = component.queryAdapter(c.getObject(),IZippable)
-      stream = adapter.getZippable()
-      ext = adapter.getExtension()
-      zipper.writestr(zip_path+ext, stream)
+      if rel_path:
+        zip_path = os.path.join(*rel_path)
+        adapter = component.queryAdapter(c.getObject(),IZippable)
+        stream = adapter.getZippable()
+        ext = adapter.getExtension()
+        zipper.writestr(zip_path+ext, stream)
     zipper.close()

@@ -36,7 +36,13 @@ class ATImageZip(AdapterBase):
 class ATDocumentZip(AdapterBase):
      """ for ATDocument type"""
      def getZippable(self):
-        wrapper = '<html><body>%s</body></html>'
-        return wrapper % self.context.getText()
+        template = '<html><body>%(header)s%(description)s%(text)s</body></html>'
+
+        header = self.context.Title() and '<h1>%s</h1>' % self.context.Title() or ''
+        description = self.context.Description() and '<p class="description">%s</p>' % self.context.Description() or ''
+        text = self.context.getText()
+        
+        html = template % {'header':header,'description':description,'text':text}
+        return html
      def getExtension(self):
         return '.html'

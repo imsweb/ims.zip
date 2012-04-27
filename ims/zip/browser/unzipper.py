@@ -42,9 +42,10 @@ class Unzipper(BrowserView):
         factory = self.createImage
       elif 'text/html' == mimetype:
         factory = self.createDocument
-      else:
+      elif id:
         factory = self.createFile
-      factory(curr, id, stream)
+      if factory:
+        factory(curr, id, stream)
       
       self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
     return self.context()
