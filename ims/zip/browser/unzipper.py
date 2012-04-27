@@ -38,7 +38,7 @@ class Unzipper(BrowserView):
           curr.reindexObject()
       mimetype = mimereg.lookupExtension(id)
       factory = None
-      if [m for m in mimetype.mimetypes if 'image/' in m]:
+      if mimetype and [m for m in mimetype.mimetypes if 'image/' in m]:
         factory = self.createImage
       elif 'text/html' == mimetype:
         factory = self.createDocument
