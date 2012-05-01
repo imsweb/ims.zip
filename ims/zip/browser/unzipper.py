@@ -62,10 +62,28 @@ class Unzipper(BrowserView):
     ob.setImage(stream)
     ob.reindexObject()
       
-  def createDocument(self, parent, id, stream):  
+  def createDocument(self, parent, id, stream):
     id = '.' in id and '.'.join(id.split('.')[:-1]) or id
+    from elementtree import ElementTree as et
+    tree = et.parse(StringIO(stream))
+    
+    body = tree.find('body')
+    title = body.findtext('h1')
+    if title:
+      body.remove(body.find('h1'))
+    desc = ''
+    p = body.find('p')
+    if p.attrib['class'] == 'description':
+      desc = p.text
+      body.remove(p)
+
+    out = StringIO()
+    tree.write(out)
+    text = out.getvalue()
+
     parent.invokeFactory('Document',id)
     ob=parent[id]
-    ob.setText(stream,mimetype="text/html")
-    ob.setTitle(id)
+    ob.setText(text,mimetype="text/html")
+    ob.setTitle(title)
+    ob.setDescription(desc)
     ob.reindexObject()

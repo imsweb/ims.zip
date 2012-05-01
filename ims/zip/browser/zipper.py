@@ -18,24 +18,24 @@ class Zipper(BrowserView):
   
   def zipfiles(self):
     """ Zip all of the content in this location (context)"""
-    from StringIO import StringIO
-    stream = StringIO()
+    from io import BytesIO
+    stream = BytesIO()
     
     self.zipFilePairs(stream)
     return stream.getvalue()
 
-  def zipFilePairs(self, stream):
+  def zipFilePairs(self, fstream):
     """Return the path and file stream of all content we find here"""
     base_path = '/'.join(self.context.getPhysicalPath())+'/' # the path in the ZCatalog
     portal = component.getUtility(ISiteRoot)
     cat = getToolByName(portal,'portal_catalog')
     filepairs = []
     
-    zipper = zipfile.ZipFile(stream, 'w', zipfile.ZIP_DEFLATED)
+    zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
 
     content = cat(path=base_path,object_provides=IZippable.__identifier__)
     for c in content:
-      rel_path = c.getPath() == base_path and c.getId or c.getPath().split(base_path)[1:]
+      rel_path = c.getPath().split(base_path)[1:] or [c.getId] # the latter if the root object has an adapter
       if rel_path:
         zip_path = os.path.join(*rel_path)
         adapter = component.queryAdapter(c.getObject(),IZippable)

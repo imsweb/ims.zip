@@ -26,3 +26,7 @@ ims/zip/browser/unzipper.pt
 ims/zip/browser/unzipper.py
 ims/zip/browser/zipper.py
 ims/zip/profiles/default/actions.xml
+ims/zip/tests/PloneTestCase.py
+ims/zip/tests/__init__.py
+ims/zip/tests/base.py
+ims/zip/tests/testZip.py
