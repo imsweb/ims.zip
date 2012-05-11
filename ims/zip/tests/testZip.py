@@ -106,8 +106,8 @@ class ZipTest(base.TestCase):
     self.failUnless('folder2/folder3/page1.html' in namelist)
     self.failUnless('folder2/file1' in namelist)
     
-    #stream = zipper.read('folder1/image1') why is this an image tag?
-    #self.assertEquals(stream,loadFile('canoneye.jpg'))
+    #stream = zipper.read('folder1/image1') why is this an image tag? Probaby from using BytesIO/StringIO to pass to ZipFile
+    #self.assertEquals(stream,loadFile('canoneye.jpg')) but I can't get it to work in this test otherwise
     
     stream = zipper.read('folder2/folder3/page1.html')
     self.assertEquals(stream,'<html><body><h1>My page</h1><p class="description">A test page</p><p>hi!</p></body></html>')

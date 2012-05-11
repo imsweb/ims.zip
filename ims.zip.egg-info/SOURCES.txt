@@ -30,3 +30,11 @@ ims/zip/tests/PloneTestCase.py
 ims/zip/tests/__init__.py
 ims/zip/tests/base.py
 ims/zip/tests/testZip.py
+ims/zip/tests/input/canoneye.jpg
+ims/zip/tests/input/file.txt
+ims/zip/tests/input/page1.html
+ims/zip/tests/input/test.zip
+ims/zip/tests/input/folder1/canoneye.jpg
+ims/zip/tests/input/folder2/file.txt
+ims/zip/tests/input/folder2/folder3/page1.html
+ims/zip/tests/output/test.zip
