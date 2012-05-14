@@ -3,7 +3,7 @@
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
  <object name="document_actions" meta_type="CMF Action Category">
   <object name="zip" meta_type="CMF Action" i18n:domain="ims.zip">
-   <property name="title" i18n:translate="">Zip</property>
+   <property name="title" i18n:translate="">Create Zip Archive</property>
    <property name="description" i18n:translate="">Zip all files</property>
    <property name="url_expr">
      string:${plone_context_state/canonical_object_url}/@@zipfiles

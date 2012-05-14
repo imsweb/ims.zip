@@ -5,6 +5,12 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from ims.zip.interfaces import IZippable
 
+class ZipPrompt(BrowserView):
+  """ confirm zip """
+  def __init__(self,context,request):
+    self.context=context
+    self.request=request
+
 class Zipper(BrowserView):
   """ Zips content to a temp file """
   def __init__(self,context,request):

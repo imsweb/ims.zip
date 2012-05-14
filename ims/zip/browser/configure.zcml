@@ -8,6 +8,14 @@
     <browser:page
         for="..interfaces.IZipFolder"
         name="zipfiles"
+        class=".zipper.ZipPrompt"
+        template="zipper.pt"
+        permission="ims.CanZip"
+        />
+
+    <browser:page
+        for="..interfaces.IZipFolder"
+        name="zipconfirm"
         class=".zipper.Zipper"
         permission="ims.CanZip"
         />
