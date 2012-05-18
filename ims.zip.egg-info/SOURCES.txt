@@ -24,6 +24,7 @@ ims/zip/browser/__init__.py
 ims/zip/browser/configure.zcml
 ims/zip/browser/unzipper.pt
 ims/zip/browser/unzipper.py
+ims/zip/browser/zipper.pt
 ims/zip/browser/zipper.py
 ims/zip/profiles/default/actions.xml
 ims/zip/tests/PloneTestCase.py
