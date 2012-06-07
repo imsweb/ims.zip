@@ -19,11 +19,19 @@ class ATBlobZip(AdapterBase):
       # plone.app.blob does the icky work for us even though they hate this method
       # it does load everything in mem but don't we have to?
       return self.context.get_data()
+    def getExtension(self):
+      id = self.context.getId()
+      fn = self.context.Schema()['file'].getAccessor(self.context)().filename
+      return id.split('.')[-1] != fn.split('.')[-1] and '.'+fn.split('.')[-1] or ''
 
 class ATFileZip(AdapterBase):
     """ for ATFile type """
     def getZippable(self):
       return self.context.get_data()
+    def getExtension(self):
+      id = self.context.getId()
+      fn = self.context.Schema()['file'].getAccessor(self.context)().filename
+      return id.split('.')[-1] != fn.split('.')[-1] and '.'+fn.split('.')[-1] or ''
 
 class ATImageZip(AdapterBase):
     """ for ATImage type """

@@ -104,7 +104,7 @@ class ZipTest(base.TestCase):
     namelist = zipper.namelist()
     self.failUnless('folder1/image1' in namelist)
     self.failUnless('folder2/folder3/page1.html' in namelist)
-    self.failUnless('folder2/file1' in namelist)
+    self.failUnless('folder2/file1.txt' in namelist)
     
     #stream = zipper.read('folder1/image1') why is this an image tag? Probaby from using BytesIO/StringIO to pass to ZipFile
     #self.assertEquals(stream,loadFile('canoneye.jpg')) but I can't get it to work in this test otherwise
