@@ -45,24 +45,28 @@ class Unzipper(BrowserView):
       elif id:
         factory = self.createFile
       if factory:
-        factory(curr, id, stream)
+        factory(curr, id, stream, mimetype)
       
       self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
     return self.context()
       
-  def createFile(self, parent, id, stream):
+  def createFile(self, parent, id, stream, mimetype):
     parent.invokeFactory('File',id)
     ob=parent[id]
+    ob.setTitle(id)
     ob.setFile(stream)
+    ob.setFilename(id)
+    ob.setFormat(mimetype)
     ob.reindexObject()
       
-  def createImage(self, parent, id, stream):
+  def createImage(self, parent, id, stream, mimetype):
     parent.invokeFactory('Image',id)
     ob=parent[id]
+    ob.setTitle(id)
     ob.setImage(stream)
     ob.reindexObject()
       
-  def createDocument(self, parent, id, stream):
+  def createDocument(self, parent, id, stream, mimetype):
     id = '.' in id and '.'.join(id.split('.')[:-1]) or id
     from elementtree import ElementTree as et
     tree = et.parse(StringIO(stream))
