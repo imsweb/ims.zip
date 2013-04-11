@@ -16,10 +16,11 @@ class Unzipper(BrowserView):
     form = self.request.form
     if 'form.submitted' in form:
       zipf = self.request.form.get('file','')
-      return self.unzip(zipf)
+      force_files = self.request.form.get('force_files',False)
+      return self.unzip(zipf,force_files)
     return self.index()
 
-  def unzip(self, zipf):
+  def unzip(self, zipf, force_files=False):
     portal = component.getUtility(ISiteRoot)
     mimereg = getToolByName(portal,'mimetypes_registry')
     zipper = zipfile.ZipFile(zipf, 'r')
@@ -38,9 +39,9 @@ class Unzipper(BrowserView):
           curr.reindexObject()
       mimetype = mimereg.lookupExtension(id)
       factory = None
-      if mimetype and [m for m in mimetype.mimetypes if 'image/' in m]:
+      if mimetype and [m for m in mimetype.mimetypes if 'image/' in m] and not force_files:
         factory = self.createImage
-      elif 'text/html' == mimetype:
+      elif 'text/html' == mimetype and not force_files:
         factory = self.createDocument
       elif id:
         factory = self.createFile
