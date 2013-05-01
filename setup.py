@@ -1,13 +1,11 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.4.3'
+version = '1.4.4'
 
 setup(name='ims.zip',
       version=version,
       description="",
-      long_description=open("README.txt").read() + "\n" +
-                       open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
