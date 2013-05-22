@@ -5,6 +5,8 @@ from StringIO import StringIO
 from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
+from zope.filerepresentation.interfaces import IFileFactory
+import mimetypes
 
 class Unzipper(BrowserView):
 
@@ -38,15 +40,15 @@ class Unzipper(BrowserView):
           curr.setTitle(folder)
           curr.reindexObject()
       mimetype = mimereg.lookupExtension(id)
-      factory = None
-      if mimetype and [m for m in mimetype.mimetypes if 'image/' in m] and not force_files:
-        factory = self.createImage
-      elif 'text/html' == mimetype and not force_files:
-        factory = self.createDocument
-      elif id:
-        factory = self.createFile
-      if factory:
-        factory(curr, id, stream, mimetype)
+      
+      if 'text/html' == mimetype and not force_files:
+        self.createDocument(curr, id, stream, mimetype)
+      elif not force_files:
+        content_type = mimetypes.guess_type(id)[0] or ""
+        factory = IFileFactory(self.context)
+        f = factory(id, content_type, stream)
+      else:
+        self.createFile(curr, id, stream, mimetype)
       
       self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
     return self.context()
@@ -58,13 +60,6 @@ class Unzipper(BrowserView):
     ob.setFile(stream)
     ob.setFilename(id)
     ob.setFormat(mimetype)
-    ob.reindexObject()
-      
-  def createImage(self, parent, id, stream, mimetype):
-    parent.invokeFactory('Image',id)
-    ob=parent[id]
-    ob.setTitle(id)
-    ob.setImage(stream)
     ob.reindexObject()
       
   def createDocument(self, parent, id, stream, mimetype):
