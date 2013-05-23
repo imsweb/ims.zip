@@ -8,7 +8,6 @@ from Products.Five.browser import BrowserView
 from zope.app.container.interfaces import INameChooser
 from zope.event import notify
 from zope.component import getUtility
-from zope.filerepresentation.interfaces import IFileFactory
 from zope.lifecycleevent import ObjectModifiedEvent
 import mimetypes, zipfile, os
 

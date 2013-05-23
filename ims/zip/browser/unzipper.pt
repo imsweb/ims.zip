@@ -17,11 +17,11 @@
     <legend>Import a zip file</legend>
     <form enctype="multipart/form-data" tal:attributes="action string:${here/absolute_url}/@@unzip" method="POST">
       <label for="file">File</label><br/>
-      <input type="file" name="file"/><br/><br/>
+      <input type="file" name="file" size="50"/><br/><br/>
       <input type="hidden" name="force_files:boolean" tal:attributes="value request/force_files|string:False" />
 
       <input type="hidden" name="form.submitted" value="1"/>
-      <input type="submit" value="Submit" class="context"/>
+      <input type="submit" value="Unzip" class="context"/>
     </form>
   </fieldset>
 </div>
