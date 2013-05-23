@@ -1,14 +1,13 @@
-from zope import interface, component
-from Products.CMFCore.interfaces import ISiteRoot
+from zope.interface import Interface
 
-class IZipper(interface.Interface):
+class IZipper(Interface):
     """ Zipper utility """
 
-class IZippable(interface.Interface):
+class IZippable(Interface):
     """ Defines what can be zipped """
   
     def getZippable(self):
       """ Return the zippable stream of this content """
 
-class IZipFolder(interface.Interface):
+class IZipFolder(Interface):
     """ Locations where you can zip content """

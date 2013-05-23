@@ -1,12 +1,16 @@
-import zipfile, os
-from zope import component
+from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.interfaces import ISiteRoot
-from StringIO import StringIO
-from Products.Five.browser import BrowserView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
+from Products.CMFPlone import utils
+from Products.Five.browser import BrowserView
+from zope.app.container.interfaces import INameChooser
+from zope.event import notify
+from zope.component import getUtility
 from zope.filerepresentation.interfaces import IFileFactory
-import mimetypes
+from zope.lifecycleevent import ObjectModifiedEvent
+import mimetypes, zipfile, os
 
 class Unzipper(BrowserView):
 
@@ -23,67 +27,41 @@ class Unzipper(BrowserView):
     return self.index()
 
   def unzip(self, zipf, force_files=False):
-    portal = component.getUtility(ISiteRoot)
-    mimereg = getToolByName(portal,'mimetypes_registry')
+    portal = getUtility(ISiteRoot)
     zipper = zipfile.ZipFile(zipf, 'r')
 
     for name in zipper.namelist():
-      path,id = os.path.split(name)
-      stream = zipper.read(name)
-      curr = self.context
-      for folder in [f for f in path.split('/') if f]:
-        try:
-          curr = curr[folder]
-        except KeyError:
-          curr.invokeFactory('Folder',folder)
-          curr = curr[folder]
-          curr.setTitle(folder)
-          curr.reindexObject()
-      mimetype = mimereg.lookupExtension(id)
-      
-      if 'text/html' == mimetype and not force_files:
-        self.createDocument(curr, id, stream, mimetype)
-      elif not force_files:
-        content_type = mimetypes.guess_type(id)[0] or ""
-        factory = IFileFactory(self.context)
-        f = factory(id, content_type, stream)
-      else:
-        self.createFile(curr, id, stream, mimetype)
-      
-      self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
+        path,file_name = os.path.split(name)
+        stream = zipper.read(name)
+        curr = self.context
+        for folder in [f for f in path.split('/') if f]:
+          try:
+            curr = curr[folder]
+          except KeyError:
+            curr.invokeFactory('Folder',folder)
+            curr = curr[folder]
+            curr.setTitle(folder)
+            curr.reindexObject()
+        
+        content_type = mimetypes.guess_type(file_name)[0] or ""
+        self.factory(file_name, content_type, stream, curr, force_files)
+        
+        self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
     return self.context()
-      
-  def createFile(self, parent, id, stream, mimetype):
-    parent.invokeFactory('File',id)
-    ob=parent[id]
-    ob.setTitle(id)
-    ob.setFile(stream)
-    ob.setFilename(id)
-    ob.setFormat(mimetype)
-    ob.reindexObject()
-      
-  def createDocument(self, parent, id, stream, mimetype):
-    id = '.' in id and '.'.join(id.split('.')[:-1]) or id
-    from elementtree import ElementTree as et
-    tree = et.parse(StringIO(stream))
     
-    body = tree.find('body')
-    title = body.findtext('h1')
-    if title:
-      body.remove(body.find('h1'))
-    desc = ''
-    p = body.find('p')
-    if p.attrib['class'] == 'description':
-      desc = p.text
-      body.remove(p)
+  def factory(self, name, content_type, data, container, force_files):
+      ctr = getToolByName(self.context, 'content_type_registry')
+      type_ = force_files and 'File' or ctr.findTypeName(name.lower(), '', '') or 'File'
+      
+      normalizer = getUtility(IFileNameNormalizer)
+      chooser = INameChooser(self.context)
+      newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
+      
+      obj = utils._createObjectByType(type_, container, newid)
+      mutator = obj.getPrimaryField().getMutator(obj)
+      mutator(data, content_type=content_type)
+      obj.setTitle(name)
+      obj.reindexObject()
 
-    out = StringIO()
-    tree.write(out)
-    text = out.getvalue()
-
-    parent.invokeFactory('Document',id)
-    ob=parent[id]
-    ob.setText(text,mimetype="text/html")
-    ob.setTitle(title)
-    ob.setDescription(desc)
-    ob.reindexObject()
+      notify(ObjectInitializedEvent(obj))
+      notify(ObjectModifiedEvent(obj))
