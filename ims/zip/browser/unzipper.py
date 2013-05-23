@@ -30,7 +30,8 @@ class Unzipper(BrowserView):
     zipper = zipfile.ZipFile(zipf, 'r')
 
     for name in zipper.namelist():
-        path,file_name = os.path.split(name)
+      path,file_name = os.path.split(name)
+      if file_name:
         stream = zipper.read(name)
         curr = self.context
         for folder in [f for f in path.split('/') if f]:
