@@ -30,7 +30,7 @@ class ATFileZip(AdapterBase):
       return self.context.get_data()
     def getExtension(self):
       id = self.context.getId()
-      fn = self.context.Schema()['file'].getAccessor(self.context)().filename
+      fn = self.context.Schema()['file'].getAccessor(self.context)().filename or id
       return id.split('.')[-1] != fn.split('.')[-1] and '.'+fn.split('.')[-1] or ''
 
 class ATImageZip(AdapterBase):
