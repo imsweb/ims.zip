@@ -47,7 +47,7 @@ class Unzipper(BrowserView):
         self.factory(file_name, content_type, stream, curr, force_files)
         
         self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
-    return self.context()
+    self.request.response.redirect(self.context.absolute_url())
     
   def factory(self, name, content_type, data, container, force_files):
       ctr = getToolByName(self.context, 'content_type_registry')
