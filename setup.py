@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '2.0'
+version = '2.1'
 
 setup(name='ims.zip',
       version=version,
@@ -31,6 +31,4 @@ setup(name='ims.zip',
       [z3c.autoinclude.plugin]
       target = plone
       """,
-      setup_requires=["PasteScript"],
-      paster_plugins=["ZopeSkel"],
       )
