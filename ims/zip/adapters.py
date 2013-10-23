@@ -37,7 +37,7 @@ class ATImageZip(AdapterBase):
     """ for ATImage type """
     def getZippable(self):
       if IATBlobImage.providedBy(self.context):
-          return str(self.context,self.context.getPrimaryField.getAccessor()(self.context)())
+          return str(self.context.getPrimaryField().getAccessor(self.context)())
       else:
           return self.context.get_data()
 
