@@ -1,25 +1,32 @@
 import zipfile, os
+from five import grok
 from zope import interface, component
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
-from ims.zip.interfaces import IZippable
+from zope.component import getUtility
 
-class ZipPrompt(BrowserView):
+from ims.zip.interfaces import IZippable, IZipFolder
+
+grok.templatedir('.')
+
+class ZipPrompt(grok.View):
   """ confirm zip """
-  def __init__(self,context,request):
-    self.context=context
-    self.request=request
+  grok.name('zipfiles')
+  grok.context(IZipFolder)
+  grok.require('ims.CanZip')
+  grok.template('zipper')
 
-class Zipper(BrowserView):
+class Zipper(grok.View):
   """ Zips content to a temp file """
-  def __init__(self,context,request):
-    self.context=context
-    self.request=request
+  grok.name('zipconfirm')
+  grok.context(IZipFolder)
+  grok.require('ims.CanZip')
 
   def __call__(self):
-    self.request.RESPONSE.setHeader('Content-Type','application/zip')
-    self.request.RESPONSE.setHeader('Content-disposition','attachment;filename=%s.zip' % self.context.getId())
+    self.request.response.setHeader('Content-Type','application/zip')
+    self.request.response.setHeader('Content-disposition','attachment;filename=%s.zip' % self.context.getId())
     return self.zipfiles()
   
   def zipfiles(self):
@@ -38,11 +45,13 @@ class Zipper(BrowserView):
     filepairs = []
     
     zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
+    registry = getUtility(IRegistry)
+    ignored_types = registry.get('ims.zip.ignored_types',[])
 
     content = cat(path=base_path,object_provides=IZippable.__identifier__)
     for c in content:
       rel_path = c.getPath().split(base_path)[1:] or [c.getId] # the latter if the root object has an adapter
-      if rel_path:
+      if rel_path and c.portal_type not in ignored_types:
         zip_path = os.path.join(*rel_path)
         adapter = component.queryAdapter(c.getObject(),IZippable)
         stream = adapter.getZippable()

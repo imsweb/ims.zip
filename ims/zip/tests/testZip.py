@@ -37,6 +37,7 @@ class ZipTest(base.TestCase):
     parent.invokeFactory('File','file1')
     ob = parent['file1']
     ob.setFile(loadFile('file.txt'))
+    ob.setFilename('file.txt')
     ob.reindexObject()
     self.file1 = ob
     
@@ -44,6 +45,7 @@ class ZipTest(base.TestCase):
     parent.invokeFactory('Image','image1')
     ob = parent['image1']
     ob.setImage(loadFile('canoneye.jpg'))
+    ob.setFilename('canoneye.jpg')
     ob.reindexObject()
     self.image1 = ob
     
@@ -97,7 +99,7 @@ class ZipTest(base.TestCase):
     self._createFile(self.folder2)
     headers, output, request = makeResponse(TestRequest())
     
-    view = getMultiAdapter((self.portal,request),name='zipfiles')
+    view = getMultiAdapter((self.portal,request),name='zipconfirm')
     data = view()
     zipper = zipfile.ZipFile(BytesIO(data), 'r', zipfile.ZIP_DEFLATED)
 
@@ -112,7 +114,7 @@ class ZipTest(base.TestCase):
     stream = zipper.read('folder2/folder3/page1.html')
     self.assertEquals(stream,'<html><body><h1>My page</h1><p class="description">A test page</p><p>hi!</p></body></html>')
     
-    stream = zipper.read('folder2/file1')
+    stream = zipper.read('folder2/file1.txt')
     self.assertEquals(stream,loadFile('file.txt'))
     
   def testUnZip(self):
@@ -122,10 +124,11 @@ class ZipTest(base.TestCase):
     zipf = os.path.join(PACKAGE_HOME, 'input', 'test.zip')
     view.unzip(zipf)
     
-    page1 = self.cat(path='/plone/folder2/folder3/page1')[0].getObject()
-    self.assertEquals(page1.Title(),'My page')
-    self.assertEquals(page1.Description(),'A test page')
-    self.assertEquals(page1.getText(),'<p>hi!</p>')
+    page1 = self.cat(path='/plone/folder2/folder3/page1.html')[0].getObject()
+    self.assertEquals(page1.getFile().get_data(),'<html><body><h1>My page</h1><p class="description">A test page</p><p>hi!</p></body></html>')
+    #self.assertEquals(page1.Title(),'My page')
+    #self.assertEquals(page1.Description(),'A test page')
+    #self.assertEquals(page1.getText(),'<p>hi!</p>')
 
 def test_suite():
     from unittest import TestSuite, makeSuite

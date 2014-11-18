@@ -4,28 +4,5 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="ims.zip">
-
-    <browser:page
-        for="..interfaces.IZipFolder"
-        name="zipfiles"
-        class=".zipper.ZipPrompt"
-        template="zipper.pt"
-        permission="ims.CanZip"
-        />
-
-    <browser:page
-        for="..interfaces.IZipFolder"
-        name="zipconfirm"
-        class=".zipper.Zipper"
-        permission="ims.CanZip"
-        />
-
-    <browser:page
-        for="..interfaces.IZipFolder"
-        name="unzip"
-        class=".unzipper.Unzipper"
-        permission="cmf.ModifyPortalContent"
-        template="unzipper.pt"
-        />
     
 </configure>

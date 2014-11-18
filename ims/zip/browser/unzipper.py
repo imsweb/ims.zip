@@ -1,3 +1,4 @@
+from five import grok
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.interfaces import ISiteRoot
@@ -6,16 +7,21 @@ from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
 from zope.app.container.interfaces import INameChooser
+from zope.app.pagetemplate import ViewPageTemplateFile
 from zope.event import notify
 from zope.component import getUtility
 from zope.lifecycleevent import ObjectModifiedEvent
 import mimetypes, zipfile, os
 
-class Unzipper(BrowserView):
+from ims.zip.interfaces import IZipFolder
 
-  def __init__(self,context,request):
-    self.context=context
-    self.request=request
+grok.templatedir('.')
+
+class Unzipper(grok.View):
+  grok.name('unzip')
+  grok.context(IZipFolder)
+  grok.require('cmf.ModifyPortalContent')
+  template = ViewPageTemplateFile("unzipper.pt")
 
   def __call__(self):
     form = self.request.form
@@ -23,7 +29,7 @@ class Unzipper(BrowserView):
       zipf = self.request.form.get('file','')
       force_files = self.request.form.get('force_files',False)
       return self.unzip(zipf,force_files)
-    return self.index()
+    return self.template()
 
   def unzip(self, zipf, force_files=False):
     portal = getUtility(ISiteRoot)
@@ -47,7 +53,7 @@ class Unzipper(BrowserView):
         self.factory(file_name, content_type, stream, curr, force_files)
         
         self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
-    self.request.response.redirect(self.context.absolute_url())
+    self.request.response.redirect(self.context.absolute_url(),trusted=True)
     
   def factory(self, name, content_type, data, container, force_files):
       ctr = getToolByName(self.context, 'content_type_registry')
