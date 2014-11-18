@@ -47,8 +47,9 @@ class Zipper(grok.View):
     zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
     registry = getUtility(IRegistry)
     ignored_types = registry.get('ims.zip.ignored_types',[])
+    ptypes = [ptypes = cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
 
-    content = cat(path=base_path,object_provides=IZippable.__identifier__)
+    content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
     for c in content:
       rel_path = c.getPath().split(base_path)[1:] or [c.getId] # the latter if the root object has an adapter
       if rel_path and c.portal_type not in ignored_types:
