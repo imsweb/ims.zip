@@ -25,9 +25,13 @@ class Zipper(grok.View):
   grok.require('ims.CanZip')
 
   def __call__(self):
-    self.request.response.setHeader('Content-Type','application/zip')
-    self.request.response.setHeader('Content-disposition','attachment;filename=%s.zip' % self.context.getId())
-    return self.zipfiles()
+    try:
+      self.request.response.setHeader('Content-Type','application/zip')
+      self.request.response.setHeader('Content-disposition','attachment;filename=%s.zip' % self.context.getId())
+      return self.zipfiles()
+    except zipfile.LargeZipFile:
+      IStatusMessage(self.request).addStatusMessage(_(u"This folder is too large to be zipped. Try zipping subfolders individually."),"error")
+      return self.request.response.redirect(self.context.absolute_url())
   
   def zipfiles(self):
     """ Zip all of the content in this location (context)"""
