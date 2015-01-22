@@ -5,6 +5,7 @@ from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
+from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getUtility
 
 from ims.zip.interfaces import IZippable, IZipFolder
