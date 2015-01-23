@@ -13,13 +13,28 @@
 
 <body>
 <div metal:fill-slot="main">
-  <p>
-    This feature will create a compressed zip file of all content within this folder and its subfolders. This process may be slow for large folders.
-  </p>
-  <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
-    <img tal:attributes="src string:${here/absolute_url}/download_icon.png"/>
-    Download
-  </a>
+  <div tal:condition="view/is_zippable">
+    <p>
+      This feature will create a compressed zip file of all content within this folder and its subfolders.
+    </p>
+    <p>
+      This process may be slow for large folders, and will fail for very large folders.  Please contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help
+    </p>
+    
+    <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
+      <img tal:attributes="src string:${here/absolute_url}/download_icon.png"/>
+      Download
+    </a>
+    <small>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</small>
+  </div>
+  <div tal:condition="not:view/is_zippable">
+    <p>
+      Sorry, this folder exceeds the allowed size for zip files. Please try zipping subfolders individually or
+      contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help.
+    </p>
+    
+    <p>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</p>
+  </div>
 </div>
 </body>
 </html>

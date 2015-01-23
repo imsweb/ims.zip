@@ -8,9 +8,25 @@ from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from zope.component import getUtility
 
+from ims.zip import _
 from ims.zip.interfaces import IZippable, IZipFolder
 
 grok.templatedir('.')
+
+def _is_zippable(view):
+  return _get_size(view) <= 2*1024.0*1024.0*1024.0 # 2 GB
+
+def _get_size(view):    
+  registry = getUtility(IRegistry)
+  portal = component.getUtility(ISiteRoot)
+  cat = getToolByName(portal,'portal_catalog')
+  
+  base_path = '/'.join(view.context.getPhysicalPath())+'/' # the path in the ZCatalog
+  ignored_types = registry.get('ims.zip.ignored_types',[])
+  ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
+
+  content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
+  return sum([getattr(b,'get_file_size',0) or 0 for b in content]) # get_file_size is an index of an obj's size() method
 
 class ZipPrompt(grok.View):
   """ confirm zip """
@@ -18,6 +34,15 @@ class ZipPrompt(grok.View):
   grok.context(IZipFolder)
   grok.require('ims.CanZip')
   grok.template('zipper')
+  
+  def get_size(self):
+    return _get_size(self)
+  
+  def is_zippable(self):
+    return _is_zippable(self)
+  
+  def size_estimate(self):
+    return '%.2f MB' % (_get_size(self)/1024.0/1024)
 
 class Zipper(grok.View):
   """ Zips content to a temp file """
@@ -36,6 +61,10 @@ class Zipper(grok.View):
   
   def zipfiles(self):
     """ Zip all of the content in this location (context)"""
+    if not _is_zippable(self):
+      IStatusMessage(self.request).addStatusMessage(_(u"This folder is too large to be zipped. Try zipping subfolders individually."),"error")
+      return self.request.response.redirect(self.context.absolute_url())
+      
     from io import BytesIO
     stream = BytesIO()
     
