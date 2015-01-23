@@ -16,6 +16,17 @@ grok.templatedir('.')
 def _is_zippable(view):
   return _get_size(view) <= 2*1024.0*1024.0*1024.0 # 2 GB
 
+def convertToBytes(size):
+  num,unit=size.split()
+  if unit.lower() == 'kb':
+    return float(num)*1024
+  elif unit.lower() == 'mb':
+    return float(num)*1024*1024
+  elif unit.lower() == 'gb':
+    return float(num)*1024*1024*1024
+  else:
+    return float(num)
+
 def _get_size(view):    
   registry = getUtility(IRegistry)
   portal = component.getUtility(ISiteRoot)
@@ -26,7 +37,7 @@ def _get_size(view):
   ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
 
   content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
-  return sum([getattr(b,'get_file_size',0) or 0 for b in content]) # get_file_size is an index of an obj's size() method
+  return sum([convertToBytes(b.getObjSize) or 0 for b in content])
 
 class ZipPrompt(grok.View):
   """ confirm zip """
