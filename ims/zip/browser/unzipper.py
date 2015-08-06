@@ -1,4 +1,5 @@
 from five import grok
+from plone.directives import form
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.interfaces import ISiteRoot
@@ -6,34 +7,49 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
+from Products.statusmessages.interfaces import IStatusMessage
+from StringIO import StringIO
 from zope.app.container.interfaces import INameChooser
-from zope.app.pagetemplate import ViewPageTemplateFile
+from z3c.form import button
 from zope.event import notify
 from zope.component import getUtility
 from zope.lifecycleevent import ObjectModifiedEvent
 import mimetypes, zipfile, os
 
-from ims.zip.interfaces import IZipFolder
+from ims.zip import _
+from ims.zip.interfaces import IZipFolder, IUnzipForm
 
 grok.templatedir('.')
 
-class Unzipper(grok.View):
+class Unzipper(form.SchemaForm):
   grok.name('unzip')
   grok.context(IZipFolder)
   grok.require('cmf.ModifyPortalContent')
-  template = ViewPageTemplateFile("unzipper.pt")
+  grok.template('unzipper')
+  ignoreContext = True
 
-  def __call__(self):
-    form = self.request.form
-    if 'form.submitted' in form:
-      zipf = self.request.form.get('file','')
-      force_files = self.request.form.get('force_files',False)
-      return self.unzip(zipf,force_files)
-    return self.template()
+  schema = IUnzipForm
+
+  @button.buttonAndHandler(_(u'Unzip'))
+  def unzipper(self, action):
+    """ unzip contents """
+    data, errors = self.extractData()
+    if errors:
+      self.status = self.formErrorsMessage
+      return
+    zipf = data['file']
+    self.unzip(zipf,force_files=True)
+
+    IStatusMessage(self.request).addStatusMessage(_(u"Your content has been imported."),"info")
+    return self.request.response.redirect(self.context.absolute_url())
+
+  def updateActions(self):
+    super(Unzipper, self).updateActions()
+    self.actions.values()[0].addClass("context")
 
   def unzip(self, zipf, force_files=False):
     portal = getUtility(ISiteRoot)
-    zipper = zipfile.ZipFile(zipf, 'r')
+    zipper = zipfile.ZipFile(StringIO(zipf.data), 'r')
 
     for name in zipper.namelist():
       path,file_name = os.path.split(name)
@@ -48,21 +64,21 @@ class Unzipper(grok.View):
             curr = curr[folder]
             curr.setTitle(folder)
             curr.reindexObject()
-        
+
         content_type = mimetypes.guess_type(file_name)[0] or ""
         self.factory(file_name, content_type, stream, curr, force_files)
-        
+
         self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
-    self.request.response.redirect(self.context.absolute_url(),trusted=True)
-    
+    self.request.response.redirect(self.context.absolute_url())
+
   def factory(self, name, content_type, data, container, force_files):
       ctr = getToolByName(self.context, 'content_type_registry')
       type_ = force_files and 'File' or ctr.findTypeName(name.lower(), '', '') or 'File'
-      
+
       normalizer = getUtility(IFileNameNormalizer)
       chooser = INameChooser(self.context)
       newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
-      
+
       obj = utils._createObjectByType(type_, container, newid)
       mutator = obj.getPrimaryField().getMutator(obj)
       mutator(data, content_type=content_type)
