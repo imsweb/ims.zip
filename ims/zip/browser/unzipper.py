@@ -9,7 +9,7 @@ from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
-from zope.app.container.interfaces import INameChooser
+from zope.container.interfaces import INameChooser
 from z3c.form import button
 from zope.event import notify
 from zope.component import getUtility
