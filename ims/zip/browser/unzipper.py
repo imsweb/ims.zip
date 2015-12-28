@@ -1,4 +1,3 @@
-from five import grok
 from plone.directives import form
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -19,13 +18,7 @@ import mimetypes, zipfile, os
 from ims.zip import _
 from ims.zip.interfaces import IZipFolder, IUnzipForm
 
-grok.templatedir('.')
-
 class Unzipper(form.SchemaForm):
-  grok.name('unzip')
-  grok.context(IZipFolder)
-  grok.require('cmf.ModifyPortalContent')
-  grok.template('unzipper')
   ignoreContext = True
 
   schema = IUnzipForm
