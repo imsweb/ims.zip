@@ -20,7 +20,7 @@
   <adapter
       for="plone.app.contenttypes.interfaces.IFile"
       provides=".interfaces.IZippable"
-      factory=".adapters.BlobZip" />
+      factory=".adapters.FileZip" />
 
   <adapter
       for="plone.app.contenttypes.interfaces.IImage"
@@ -32,7 +32,7 @@
       provides=".interfaces.IZippable"
       factory=".adapters.DocumentZip" />
 
-  <class class="plone.app.contenttypes.content.File">
+  <!-- <class class="plone.app.contenttypes.content.File">
     <implements interface=".interfaces.IZippable" />
   </class>
 
@@ -42,7 +42,7 @@
 
   <class class="plone.app.contenttypes.content.Document">
     <implements interface=".interfaces.IZippable" />
-  </class>
+  </class> -->
 
   <class class="plone.app.contenttypes.content.Folder">
     <implements interface=".interfaces.IZipFolder" />
@@ -59,10 +59,5 @@
       description="Installs the ims.zip package"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
-
-  <browser:resourceDirectory
-      name="ims.zip"
-      directory="static" />
-  <!-- -*- extra stuff goes here -*- -->
 
 </configure>
