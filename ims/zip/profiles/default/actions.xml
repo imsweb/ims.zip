@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_actions" meta_type="Plone Actions Tool"
    xmlns:i18n="http://xml.zope.org/namespaces/i18n">
- <object name="document_actions" meta_type="CMF Action Category">
+ <object name="object_buttons" meta_type="CMF Action Category">
   <object name="zip" meta_type="CMF Action" i18n:domain="ims.zip">
    <property name="title" i18n:translate="">Create Zip Archive</property>
    <property name="description" i18n:translate="">Zip all files</property>
@@ -18,8 +18,12 @@
    <property name="visible">True</property>
   </object>
  </object>
+ <object name="document_actions">
+  <object name="zip" remove="True"/>
+ </object>
  <object name="object" meta_type="CMF Action Category">
-  <object name="zip" meta_type="CMF Action" i18n:domain="ims.zip">
+  <object name="zip" remove="True"/>
+  <object name="unzip" meta_type="CMF Action" i18n:domain="ims.zip">
    <property name="title" i18n:translate="">Unzip</property>
    <property name="description" i18n:translate="">Unzip files into a folder</property>
    <property name="url_expr">
