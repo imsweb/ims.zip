@@ -18,46 +18,33 @@
   <include package=".browser" />
 
   <adapter
-      for="plone.app.blob.interfaces.IATBlob"
+      for="plone.app.contenttypes.interfaces.IFile"
       provides=".interfaces.IZippable"
-      factory=".adapters.ATBlobZip" />
+      factory=".adapters.BlobZip" />
 
   <adapter
-      for="Products.ATContentTypes.interfaces.file.IATFile"
+      for="plone.app.contenttypes.interfaces.IImage"
       provides=".interfaces.IZippable"
-      factory=".adapters.ATFileZip" />
+      factory=".adapters.ImageZip" />
 
   <adapter
-      for="Products.ATContentTypes.interfaces.image.IATImage"
+      for="plone.app.contenttypes.interfaces.IDocument"
       provides=".interfaces.IZippable"
-      factory=".adapters.ATImageZip" />
+      factory=".adapters.DocumentZip" />
 
-  <adapter
-      for="Products.ATContentTypes.interfaces.document.IATDocument"
-      provides=".interfaces.IZippable"
-      factory=".adapters.ATDocumentZip" />
-
-  <class class="Products.ATContentTypes.content.file.ATFile">
+  <class class="plone.app.contenttypes.content.File">
     <implements interface=".interfaces.IZippable" />
   </class>
 
-  <class class="plone.app.blob.content.ATBlob">
+  <class class="plone.app.contenttypes.content.Image">
     <implements interface=".interfaces.IZippable" />
   </class>
 
-  <class class="Products.ATContentTypes.content.image.ATImage">
+  <class class="plone.app.contenttypes.content.Document">
     <implements interface=".interfaces.IZippable" />
   </class>
 
-  <class class="Products.ATContentTypes.content.document.ATDocument">
-    <implements interface=".interfaces.IZippable" />
-  </class>
-
-  <class class="Products.ATContentTypes.content.folder.ATFolder">
-    <implements interface=".interfaces.IZipFolder" />
-  </class>
-
-  <class class="Products.ATContentTypes.content.folder.ATBTreeFolder">
+  <class class="plone.app.contenttypes.content.Folder">
     <implements interface=".interfaces.IZipFolder" />
   </class>
 
@@ -72,6 +59,10 @@
       description="Installs the ims.zip package"
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
+
+  <browser:resourceDirectory
+      name="ims.zip"
+      directory="static" />
   <!-- -*- extra stuff goes here -*- -->
 
 </configure>

@@ -1,5 +1,7 @@
+import plone.api
 from plone.directives import form
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from plone.rfc822.interfaces import IPrimaryFieldInfo
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
@@ -36,10 +38,6 @@ class Unzipper(form.SchemaForm):
     IStatusMessage(self.request).addStatusMessage(_(u"Your content has been imported."),"info")
     return self.request.response.redirect(self.context.absolute_url())
 
-  def updateActions(self):
-    super(Unzipper, self).updateActions()
-    self.actions.values()[0].addClass("context")
-
   def unzip(self, zipf, force_files=False):
     portal = getUtility(ISiteRoot)
     zipper = zipfile.ZipFile(StringIO(zipf.data), 'r')
@@ -72,11 +70,6 @@ class Unzipper(form.SchemaForm):
       chooser = INameChooser(self.context)
       newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
 
-      obj = utils._createObjectByType(type_, container, newid)
-      mutator = obj.getPrimaryField().getMutator(obj)
-      mutator(data, content_type=content_type)
-      obj.setTitle(name)
-      obj.reindexObject()
-
-      notify(ObjectInitializedEvent(obj))
-      notify(ObjectModifiedEvent(obj))
+      plone.api.content.create(container=container, type=type_, id=newid, title=name)
+      primary_field = IPrimaryFieldInfo(self.context)
+      import pdb; pdb.set_trace()

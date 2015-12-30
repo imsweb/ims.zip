@@ -20,9 +20,9 @@
     <p>
       This process may be slow for large folders, and will fail for very large folders.  Please contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help
     </p>
-    
+
     <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
-      <img tal:attributes="src string:${here/absolute_url}/download_icon.png"/>
+      <i class="glyphicon glyphicon-download-alt"></i>
       Download
     </a>
     <small>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</small>
@@ -32,7 +32,7 @@
       Sorry, this folder exceeds the allowed size for zip files. Please try zipping subfolders individually or
       contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help.
     </p>
-    
+
     <p>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</p>
   </div>
 </div>
