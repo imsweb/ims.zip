@@ -32,7 +32,7 @@
       provides=".interfaces.IZippable"
       factory=".adapters.DocumentZip" />
 
-  <!-- <class class="plone.app.contenttypes.content.File">
+  <class class="plone.app.contenttypes.content.File">
     <implements interface=".interfaces.IZippable" />
   </class>
 
@@ -42,7 +42,7 @@
 
   <class class="plone.app.contenttypes.content.Document">
     <implements interface=".interfaces.IZippable" />
-  </class> -->
+  </class>
 
   <class class="plone.app.contenttypes.content.Folder">
     <implements interface=".interfaces.IZipFolder" />
