@@ -1,8 +1,9 @@
 from zope import interface, component
+from Products.ATContentTypes.interfaces.file import IATFile
 from Products.CMFCore.interfaces import ISiteRoot
+from Products.CMFPlone.utils import safe_unicode as su
 from plone.app.blob.interfaces import IATBlob, IATBlobImage
 from plone.rfc822.interfaces import IPrimaryFieldInfo
-from Products.ATContentTypes.interfaces.file import IATFile
 from ims.zip.interfaces import IZippable
 
 class AdapterBase(object):
@@ -40,6 +41,6 @@ class DocumentZip(AdapterBase):
         text = self.context.text.raw
 
       html = template % {'header':header,'description':description,'text':text}
-      return html
+      return su(html)
     def extension(self):
       return '.html'
