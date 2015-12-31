@@ -5,7 +5,7 @@ from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
-from zope.component import getUtility
+from zope.component import getUtility, queryAdapter
 
 from ims.zip import _
 from ims.zip.interfaces import IZippable, IZipFolder
@@ -87,7 +87,7 @@ class Zipper(BrowserView):
       rel_path = c.getPath().split(base_path)[1:] or [c.getId] # the latter if the root object has an adapter
       if rel_path and c.portal_type not in ignored_types:
         zip_path = os.path.join(*rel_path)
-        adapter = IZippable(c.getObject())
+        adapter = queryAdapter(c.getObject(),IZippable)
         stream = adapter.zippable()
         ext = adapter.extension()
         zipper.writestr(zip_path+ext, stream)
