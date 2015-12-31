@@ -35,7 +35,9 @@ class DocumentZip(AdapterBase):
 
       header = self.context.title and '<h1>%s</h1>' % self.context.title or ''
       description = self.context.description and '<p class="description">%s</p>' % self.context.description or ''
-      text = self.context.text.raw
+      text = ''
+      if self.context.text:
+        text = self.context.text.raw
 
       html = template % {'header':header,'description':description,'text':text}
       return html

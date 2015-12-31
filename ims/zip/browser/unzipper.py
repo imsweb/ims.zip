@@ -70,6 +70,6 @@ class Unzipper(form.SchemaForm):
       chooser = INameChooser(self.context)
       newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
 
-      plone.api.content.create(container=container, type=type_, id=newid, title=name)
-      primary_field = IPrimaryFieldInfo(self.context)
-      import pdb; pdb.set_trace()
+      obj = plone.api.content.create(container=container, type=type_, id=newid, title=name)
+      primary_field = IPrimaryFieldInfo(obj)
+      primary_field.value.filename = name
