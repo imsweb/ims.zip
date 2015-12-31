@@ -32,7 +32,7 @@ class ImageZip(FileZip):
 class DocumentZip(AdapterBase):
     """ for Document type"""
     def zippable(self):
-      template = '<html><body>%(header)s%(description)s%(text)s</body></html>'
+      template = '<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><body>%(header)s%(description)s%(text)s</body></html>'
 
       header = self.context.title and '<h1>%s</h1>' % self.context.title or ''
       description = self.context.description and '<p class="description">%s</p>' % self.context.description or ''
@@ -41,6 +41,6 @@ class DocumentZip(AdapterBase):
         text = self.context.text.raw
 
       html = template % {'header':header,'description':description,'text':text}
-      return su(html)
+      return su(html).encode('utf-8')
     def extension(self):
       return '.html'
