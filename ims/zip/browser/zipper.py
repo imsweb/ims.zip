@@ -31,7 +31,7 @@ def _get_size(view):
   ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
 
   content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
-  return sum([convertToBytes(b.getObjSize) or 0 for b in content])
+  return sum([b.getObjSize and convertToBytes(b.getObjSize) or 0 for b in content])
 
 def _is_zippable(view):
   return _get_size(view) <= 2*1024.0*1024.0*1024.0 # 2 GB
@@ -89,6 +89,7 @@ class Zipper(BrowserView):
         zip_path = os.path.join(*rel_path)
         adapter = queryAdapter(c.getObject(),IZippable)
         stream = adapter.zippable()
-        ext = adapter.extension()
-        zipper.writestr(zip_path+ext, stream)
+        if stream:
+          ext = adapter.extension()
+          zipper.writestr(zip_path+ext, stream)
     zipper.close()

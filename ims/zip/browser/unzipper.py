@@ -1,6 +1,7 @@
 import plone.api
 from plone.directives import form
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
+from plone.namedfile.file import NamedBlobFile
 from plone.rfc822.interfaces import IPrimaryFieldInfo
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.interfaces import ISiteRoot
@@ -38,6 +39,10 @@ class Unzipper(form.SchemaForm):
     IStatusMessage(self.request).addStatusMessage(_(u"Your content has been imported."),"info")
     return self.request.response.redirect(self.context.absolute_url())
 
+  def updateActions(self):
+    super(Unzipper, self).updateActions()
+    self.actions.values()[0].addClass("context")
+
   def unzip(self, zipf, force_files=False):
     portal = getUtility(ISiteRoot)
     zipper = zipfile.ZipFile(StringIO(zipf.data), 'r')
@@ -64,7 +69,9 @@ class Unzipper(form.SchemaForm):
 
   def factory(self, name, content_type, data, container, force_files):
       ctr = getToolByName(self.context, 'content_type_registry')
-      type_ = force_files and 'File' or ctr.findTypeName(name.lower(), '', '') or 'File'
+      type_ = ctr.findTypeName(name.lower(), '', '')
+      if force_files and type_ not in ('File','Image'):
+        type_ = 'File'
 
       normalizer = getUtility(IFileNameNormalizer)
       chooser = INameChooser(self.context)
@@ -72,4 +79,5 @@ class Unzipper(form.SchemaForm):
 
       obj = plone.api.content.create(container=container, type=type_, id=newid, title=name)
       primary_field = IPrimaryFieldInfo(obj)
-      primary_field.value.filename = name
+      setattr(obj, primary_field.fieldname, primary_field.field._type(data, filename=utils.safe_unicode(name)))
+      obj.reindexObject()
