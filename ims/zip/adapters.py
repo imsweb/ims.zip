@@ -1,5 +1,3 @@
-from zope import interface, component
-from Products.CMFCore.interfaces import ISiteRoot
 from plone.app.blob.interfaces import IATBlob, IATBlobImage
 from Products.ATContentTypes.interfaces.file import IATFile
 from ims.zip.interfaces import IZippable
@@ -49,7 +47,7 @@ class ATDocumentZip(AdapterBase):
       header = self.context.Title() and '<h1>%s</h1>' % self.context.Title() or ''
       description = self.context.Description() and '<p class="description">%s</p>' % self.context.Description() or ''
       text = self.context.getText()
-        
+
       html = template % {'header':header,'description':description,'text':text}
       return html
     def getExtension(self):
