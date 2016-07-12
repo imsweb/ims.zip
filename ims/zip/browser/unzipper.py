@@ -4,12 +4,9 @@ from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.namedfile.file import NamedBlobFile
 from plone.rfc822.interfaces import IPrimaryFieldInfo
 from Products.Archetypes.event import ObjectInitializedEvent
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone import utils
 from Products.Five.browser import BrowserView
-from Products.statusmessages.interfaces import IStatusMessage
 from StringIO import StringIO
 from zope.container.interfaces import INameChooser
 from z3c.form import button
@@ -36,7 +33,7 @@ class Unzipper(form.SchemaForm):
     zipf = data['file']
     self.unzip(zipf,force_files=True)
 
-    IStatusMessage(self.request).addStatusMessage(_(u"Your content has been imported."),"info")
+    plone.api.portal.show_message(_(u"Your content has been imported."), self.request, type="info")
     return self.request.response.redirect(self.context.absolute_url())
 
   def updateActions(self):
@@ -44,7 +41,6 @@ class Unzipper(form.SchemaForm):
     self.actions.values()[0].addClass("context")
 
   def unzip(self, zipf, force_files=False):
-    portal = getUtility(ISiteRoot)
     zipper = zipfile.ZipFile(StringIO(zipf.data), 'r')
 
     for name in zipper.namelist():
@@ -64,11 +60,11 @@ class Unzipper(form.SchemaForm):
         content_type = mimetypes.guess_type(file_name)[0] or ""
         self.factory(file_name, content_type, stream, curr, force_files)
 
-        self.context.plone_utils.addPortalMessage(PloneMessageFactory(u'Zip file imported'))
+        plone.api.portal.show_message(_(u'Zip file imported'), self.request, type="info")
     self.request.response.redirect(self.context.absolute_url())
 
   def factory(self, name, content_type, data, container, force_files):
-      ctr = getToolByName(self.context, 'content_type_registry')
+      ctr = plone.api.portal.get_tool('content_type_registry')
       type_ = ctr.findTypeName(name.lower(), '', '')
       if force_files and type_ not in ('File','Image'):
         type_ = 'File'

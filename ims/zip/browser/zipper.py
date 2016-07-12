@@ -1,16 +1,14 @@
 from io import BytesIO
-import zipfile, os
-from plone.registry.interfaces import IRegistry
-from Products.CMFCore.interfaces import ISiteRoot
-from Products.CMFCore.utils import getToolByName
+import zipfile
+import os
+import plone.api
 from Products.Five.browser import BrowserView
-from Products.statusmessages.interfaces import IStatusMessage
-from zope.component import getUtility, queryAdapter
+from zope.component import queryAdapter
 
 from ims.zip import _
 from ims.zip.interfaces import IZippable, IZipFolder
 
-def convertToBytes(size):
+def convert_to_bytes(size):
   num,unit=size.split()
   if unit.lower() == 'kb':
     return float(num)*1024
@@ -22,16 +20,14 @@ def convertToBytes(size):
     return float(num)
 
 def _get_size(view):
-  registry = getUtility(IRegistry)
-  portal = getUtility(ISiteRoot)
-  cat = getToolByName(portal,'portal_catalog')
+  cat = plone.api.portal.get_tool('portal_catalog')
 
   base_path = '/'.join(view.context.getPhysicalPath())+'/' # the path in the ZCatalog
-  ignored_types = registry.get('ims.zip.ignored_types',[])
+  ignored_types = plone.api.portal.get_registry_record('ims.zip.ignored_types') or []
   ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
 
   content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
-  return sum([b.getObjSize and convertToBytes(b.getObjSize) or 0 for b in content])
+  return sum([b.getObjSize and convert_to_bytes(b.getObjSize) or 0 for b in content])
 
 def _is_zippable(view):
   return _get_size(view) <= 2*1024.0*1024.0*1024.0 # 2 GB
@@ -57,13 +53,15 @@ class Zipper(BrowserView):
       self.request.response.setHeader('Content-disposition','attachment;filename=%s.zip' % self.context.getId())
       return self.do_zip()
     except zipfile.LargeZipFile:
-      IStatusMessage(self.request).addStatusMessage(_(u"This folder is too large to be zipped. Try zipping subfolders individually."),"error")
+      message = _(u"This folder is too large to be zipped. Try zipping subfolders individually.")
+      plone.api.portal.show_message(message, self.request, type="error")
       return self.request.response.redirect(self.context.absolute_url())
 
   def do_zip(self):
     """ Zip all of the content in this location (context)"""
     if not _is_zippable(self):
-      IStatusMessage(self.request).addStatusMessage(_(u"This folder is too large to be zipped. Try zipping subfolders individually."),"error")
+      message = _(u"This folder is too large to be zipped. Try zipping subfolders individually.")
+      plone.api.portal.show_message(message, self.request, type="error")
       return self.request.response.redirect(self.context.absolute_url())
 
     stream = BytesIO()
@@ -73,13 +71,11 @@ class Zipper(BrowserView):
   def zipfiles(self, fstream):
     """Return the path and file stream of all content we find here"""
     base_path = '/'.join(self.context.getPhysicalPath())+'/' # the path in the ZCatalog
-    portal = getUtility(ISiteRoot)
-    cat = getToolByName(portal,'portal_catalog')
+    cat = plone.api.portal.get_tool('portal_catalog')
     filepairs = []
 
     zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
-    registry = getUtility(IRegistry)
-    ignored_types = registry.get('ims.zip.ignored_types',[])
+    ignored_types = plone.api.portal.get_registry_record('ims.zip.ignored_types') or []
     ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
 
     content = cat(path=base_path,object_provides=IZippable.__identifier__,portal_type=ptypes)
