@@ -5,17 +5,15 @@ version = '3.0'
 
 setup(name='ims.zip',
       version=version,
-      description="",
-      # Get more strings from
-      # http://pypi.python.org/pypi?:action=list_classifiers
+      description="zip and unzip folder contents",
       classifiers=[
         "Framework :: Plone",
         "Programming Language :: Python",
         ],
       keywords='',
-      author='',
-      author_email='',
-      url='http://svn.plone.org/svn/collective/',
+      author='Eric Wohnlich',
+      author_email='wohnlice@imsweb.com',
+      url='https://git.imsweb.com/plone/ims.zip',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['ims'],
@@ -23,7 +21,6 @@ setup(name='ims.zip',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          # -*- Extra requirements: -*-
       ],
       entry_points="""
       # -*- Entry points: -*-
