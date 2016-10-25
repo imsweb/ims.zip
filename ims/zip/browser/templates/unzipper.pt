@@ -6,13 +6,13 @@
       metal:use-macro="here/main_template/macros/master">
 
 <body>
-  <div metal:fill-slot="content">
+<div metal:fill-slot="content">
 
     <div id="content">
 
-      <metal:block use-macro="context/@@ploneform-macros/titlelessform" />
+        <metal:block use-macro="context/@@ploneform-macros/titlelessform"/>
     </div>
 
-  </div>
+</div>
 </body>
 </html>

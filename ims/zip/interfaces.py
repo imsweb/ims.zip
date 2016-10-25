@@ -1,23 +1,33 @@
-from plone.directives import form
-from plone.namedfile.field import NamedFile
-from zope.interface import Interface
-
 from ims.zip import _
+from plone.namedfile.field import NamedFile
+from plone.supermodel import model
+from zope.interface.interface import Interface
+from zope import schema
+
 
 class IZipper(Interface):
     """ Zipper utility """
+
 
 class IZippable(Interface):
     """ Defines what can be zipped """
 
     def getZippable(self):
-      """ Return the zippable stream of this content """
+        """ Return the zippable stream of this content """
+
 
 class IZipFolder(Interface):
     """ Locations where you can zip content """
 
-class IUnzipForm(form.Schema):
+
+class IUnzipForm(model.Schema):
     file = NamedFile(
-              title=_(u"Zip File"),
-              required = False,
-          )
+        title=_(u"Zip File"),
+        required=False,
+    )
+
+
+class IZipSettings(model.Schema):
+    technical_support_address = schema.TextLine(
+        title=_(u"Technical Support name")
+    )

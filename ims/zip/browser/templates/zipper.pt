@@ -6,35 +6,33 @@
       metal:use-macro="here/main_template/macros/master"
       i18n:domain="plone">
 
-<head>
-    <metal:noborder fill-slot="top_slot"
-                 tal:define="dummy python:request.set('disable_border',1)" />
-</head>
-
 <body>
 <div metal:fill-slot="main">
-  <div tal:condition="view/is_zippable">
-    <p>
-      This feature will create a compressed zip file of all content within this folder and its subfolders.
-    </p>
-    <p>
-      This process may be slow for large folders, and will fail for very large folders.  Please contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help
-    </p>
+    <div tal:condition="view/is_zippable">
+        <p>
+            This feature will create a compressed zip file of all content within this folder and its sub-folders.
+        </p>
+        <p>
+            This process may be slow for large folders, and will fail for very large folders. Please contact
+            <a tal:attributes="href string:mailto:${view/technical_support_address"
+               tal:content="view/technical_support_address" /> for help
+        </p>
 
-    <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
-      <i class="glyphicon glyphicon-download-alt"></i>
-      Download
-    </a>
-    <small>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</small>
-  </div>
-  <div tal:condition="not:view/is_zippable">
-    <p>
-      Sorry, this folder exceeds the allowed size for zip files. Please try zipping subfolders individually or
-      contact <a href="mailto:portal.administration@imsweb.com">portal.administration@imsweb.com</a> for help.
-    </p>
+        <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
+            <i class="glyphicon glyphicon-download-alt"></i>
+            Download
+        </a>
+        <small>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</small>
+    </div>
+    <div tal:condition="not:view/is_zippable">
+        <p>
+            Sorry, this folder exceeds the allowed size for zip files. Please try zipping sub-folders individually or
+            contact <a tal:attributes="href string:mailto:${view/technical_support_address"
+                       tal:content="view/technical_support_address" /> for help.
+        </p>
 
-    <p>(pre-zipped estimated size: <span tal:content="view/size_estimate" />)</p>
-  </div>
+        <p>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</p>
+    </div>
 </div>
 </body>
 </html>
