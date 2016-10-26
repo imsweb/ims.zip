@@ -1,0 +1,6 @@
+<registry>
+    <record field="technical_support_address" interface="ims.zip.interfaces.IZipSettings"
+            name="ims.zip.interfaces.IZipSettings.technical_support_address">
+        <value>portal.administration@imsweb.com</value>
+    </record>
+</registry>
