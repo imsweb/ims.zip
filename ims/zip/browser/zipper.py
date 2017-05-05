@@ -25,8 +25,7 @@ def _get_size(view):
     cat = plone.api.portal.get_tool('portal_catalog')
 
     base_path = '/'.join(view.context.getPhysicalPath()) + '/'  # the path in the ZCatalog
-    ignored_types = plone.api.portal.get_registry_record('ims.zip.ignored_types') or []
-    ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
+    ptypes = cat.uniqueValuesFor('portal_type')
 
     content = cat(path=base_path, object_provides=IZippable.__identifier__, portal_type=ptypes)
     return sum([b.getObjSize and convert_to_bytes(b.getObjSize) or 0 for b in content])
@@ -83,13 +82,12 @@ class Zipper(BrowserView):
         filepairs = []
 
         zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
-        ignored_types = plone.api.portal.get_registry_record('ims.zip.ignored_types') or []
-        ptypes = [ptype for ptype in cat.uniqueValuesFor('portal_type') if ptype not in ignored_types]
+        ptypes = cat.uniqueValuesFor('portal_type')
 
         content = cat(path=base_path, object_provides=IZippable.__identifier__, portal_type=ptypes)
         for c in content:
             rel_path = c.getPath().split(base_path)[1:] or [c.getId]  # the latter if the root object has an adapter
-            if rel_path and c.portal_type not in ignored_types:
+            if rel_path:
                 zip_path = os.path.join(*rel_path)
                 adapter = queryAdapter(c.getObject(), IZippable)
                 stream = adapter.zippable()
