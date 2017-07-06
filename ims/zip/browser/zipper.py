@@ -6,7 +6,7 @@ from Products.Five.browser import BrowserView
 from zope.component import queryAdapter
 
 from ims.zip import _
-from ims.zip.interfaces import IZippable, IZipFolder
+from ims.zip.interfaces import IZippable
 
 
 def convert_to_bytes(size):
