@@ -38,6 +38,9 @@ def _is_zippable(view):
 class ZipPrompt(BrowserView):
     """ confirm zip """
 
+    def technical_support_address(self):
+        return plone.api.portal.get_registry_record('ims.zip.interfaces.IZipSettings.technical_support_address')
+
     def get_size(self):
         return _get_size(self)
 
