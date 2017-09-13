@@ -7,11 +7,11 @@
 
     <permission
             id="ims.CanZip"
-            title="ims.zip: can zip" />
+            title="ims.zip: can zip"/>
 
     <permission
             id="ims.CanUnzip"
-            title="ims.zip: can unzip" />
+            title="ims.zip: can unzip"/>
 
     <include package=".browser"/>
 

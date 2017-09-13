@@ -23,10 +23,10 @@ class FileZip(AdapterBase):
         return primary_field.value.data
 
     def extension(self):
-        id = self.context.getId()
+        content_id = self.context.getId()
         primary_field = IPrimaryFieldInfo(self.context)
-        fn = primary_field.value.filename or id
-        return id.split('.')[-1] != fn.split('.')[-1] and '.' + fn.split('.')[-1] or ''
+        fn = primary_field.value.filename or content_id
+        return content_id.split('.')[-1] != fn.split('.')[-1] and '.' + fn.split('.')[-1] or ''
 
 
 class ImageZip(FileZip):
@@ -37,7 +37,8 @@ class DocumentZip(AdapterBase):
     """ for Document type"""
 
     def zippable(self):
-        template = '<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><body>%(header)s%(description)s%(text)s</body></html>'
+        template = '<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' \
+                   '<body>%(header)s%(description)s%(text)s</body></html>'
 
         header = self.context.title and '<h1>%s</h1>' % self.context.title or ''
         description = self.context.description and '<p class="description">%s</p>' % self.context.description or ''

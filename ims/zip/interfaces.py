@@ -12,7 +12,7 @@ class IZipper(Interface):
 class IZippable(Interface):
     """ Defines what can be zipped """
 
-    def getZippable(self):
+    def get_zippable(self):
         """ Return the zippable stream of this content """
 
 

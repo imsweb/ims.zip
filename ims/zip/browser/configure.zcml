@@ -1,31 +1,26 @@
 <configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:five="http://namespaces.zope.org/five"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    xmlns:zcml="http://namespaces.zope.org/zcml"
-    i18n_domain="ims.zip">
+        xmlns="http://namespaces.zope.org/zope"
+        xmlns:browser="http://namespaces.zope.org/browser"
+        i18n_domain="ims.zip">
 
     <browser:page
-        name="unzip"
-        for="..interfaces.IZipFolder"
-        template="templates/unzipper.pt"
-        permission="cmf.ModifyPortalContent"
-        class=".unzipper.Unzipper"
-        />
+            name="unzip"
+            for="..interfaces.IZipFolder"
+            template="templates/unzipper.pt"
+            permission="cmf.ModifyPortalContent"
+            class=".unzipper.Unzipper"/>
 
     <browser:page
-        name="zipfiles"
-        for="..interfaces.IZipFolder"
-        template="templates/zipper.pt"
-        permission="ims.CanZip"
-        class=".zipper.ZipPrompt"
-        />
+            name="zipfiles"
+            for="..interfaces.IZipFolder"
+            template="templates/zipper.pt"
+            permission="ims.CanZip"
+            class=".zipper.ZipPrompt"/>
 
     <browser:page
-        name="zipconfirm"
-        for="..interfaces.IZipFolder"
-        permission="ims.CanZip"
-        class=".zipper.Zipper"
-        />
+            name="zipconfirm"
+            for="..interfaces.IZipFolder"
+            permission="ims.CanZip"
+            class=".zipper.Zipper"/>
 
 </configure>
