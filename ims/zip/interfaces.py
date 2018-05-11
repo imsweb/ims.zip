@@ -25,6 +25,10 @@ class IUnzipForm(model.Schema):
         title=_(u"Zip File"),
         required=False,
     )
+    force_files = schema.Bool(
+        title=_(u"Force upload as Files"),
+        description=_(u"If unchecked, some files will become Pages, such as .html and .txt"),
+    )
 
 
 class IZipSettings(model.Schema):
