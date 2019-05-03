@@ -1,17 +1,17 @@
 import mimetypes
 import os
 import zipfile
-from StringIO import StringIO
 
 import plone.api
 from Products.CMFPlone import utils
-from plone.app.textfield import RichText
-from plone.app.textfield.value import RichTextValue
 from ims.zip import _
 from ims.zip.interfaces import IUnzipForm
+from plone.app.textfield import RichText
+from plone.app.textfield.value import RichTextValue
 from plone.autoform.form import AutoExtensibleForm
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.rfc822.interfaces import IPrimaryFieldInfo
+from six import StringIO
 from z3c.form import button, form
 from zope.component import getUtility
 from zope.container.interfaces import INameChooser
