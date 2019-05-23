@@ -1,11 +1,11 @@
 import unittest
 
+import plone.api as api
 import transaction
+from ims.zip import testing
 from plone.app.testing import setRoles, TEST_USER_ID, SITE_OWNER_NAME, SITE_OWNER_PASSWORD
 from plone.testing.z2 import Browser
-from zope.interface import directlyProvides
-from ims.zip import testing
-import plone.api as api
+
 
 class UnitTestCase(unittest.TestCase):
     def setUp(self):
