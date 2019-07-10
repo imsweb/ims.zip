@@ -82,7 +82,6 @@ class Zipper(BrowserView):
         """Return the path and file stream of all content we find here"""
         base_path = '/'.join(self.context.getPhysicalPath()) + '/'  # the path in the ZCatalog
         cat = plone.api.portal.get_tool('portal_catalog')
-        filepairs = []
 
         zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
         ptypes = cat.uniqueValuesFor('portal_type')
