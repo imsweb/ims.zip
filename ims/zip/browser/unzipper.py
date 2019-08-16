@@ -4,17 +4,18 @@ import zipfile
 
 import plone.api
 from Products.CMFPlone import utils
-from ims.zip import _
-from ims.zip.interfaces import IUnzipForm
 from plone.app.textfield import RichText
 from plone.app.textfield.value import RichTextValue
 from plone.autoform.form import AutoExtensibleForm
 from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.rfc822.interfaces import IPrimaryFieldInfo
-from six import StringIO
+from six import BytesIO
 from z3c.form import button, form
 from zope.component import getUtility
 from zope.container.interfaces import INameChooser
+
+from .. import _
+from ..interfaces import IUnzipForm
 
 
 class Unzipper(AutoExtensibleForm, form.Form):
@@ -22,7 +23,7 @@ class Unzipper(AutoExtensibleForm, form.Form):
 
     schema = IUnzipForm
 
-    @button.buttonAndHandler(_(u'Unzip'))
+    @button.buttonAndHandler(_('Unzip'))
     def unzipper(self, action):
         """ unzip contents """
         data, errors = self.extractData()
@@ -33,15 +34,15 @@ class Unzipper(AutoExtensibleForm, form.Form):
         force_files = data['force_files']
         self.unzip(zipf, force_files=force_files)
 
-        plone.api.portal.show_message(_(u"Your content has been imported."), self.request, type="info")
+        plone.api.portal.show_message(_("Your content has been imported."), self.request, type="info")
         return self.request.response.redirect(self.context.absolute_url())
 
     def updateActions(self):
         super(Unzipper, self).updateActions()
-        self.actions.values()[0].addClass("context")
+        list(self.actions.values())[0].addClass("context")
 
     def unzip(self, zipf, force_files=False):
-        zipper = zipfile.ZipFile(StringIO(zipf.data), 'r')
+        zipper = zipfile.ZipFile(BytesIO(zipf.data), 'r')
 
         for name in zipper.namelist():
             path, file_name = os.path.split(name)
@@ -60,7 +61,7 @@ class Unzipper(AutoExtensibleForm, form.Form):
                 content_type = mimetypes.guess_type(file_name)[0] or ""
                 self.factory(file_name, content_type, stream, curr, force_files)
 
-                plone.api.portal.show_message(_(u'Zip file imported'), self.request, type="info")
+                plone.api.portal.show_message(_('Zip file imported'), self.request, type="info")
         self.request.response.redirect(self.context.absolute_url())
 
     def factory(self, name, content_type, data, container, force_files):

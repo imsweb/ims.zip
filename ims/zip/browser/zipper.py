@@ -1,12 +1,13 @@
-from io import BytesIO
-import zipfile
 import os
+import zipfile
+from io import BytesIO
+
 import plone.api
 from Products.Five.browser import BrowserView
 from zope.component import queryAdapter
 
-from ims.zip import _
-from ims.zip.interfaces import IZippable
+from .. import _
+from ..interfaces import IZippable
 
 
 def convert_to_bytes(size):
@@ -63,14 +64,14 @@ class Zipper(BrowserView):
             self.request.response.setHeader('Content-disposition', 'attachment;filename=%s.zip' % self.context.getId())
             return self.do_zip()
         except zipfile.LargeZipFile:
-            message = _(u"This folder is too large to be zipped. Try zipping subfolders individually.")
+            message = _("This folder is too large to be zipped. Try zipping subfolders individually.")
             plone.api.portal.show_message(message, self.request, type="error")
             return self.request.response.redirect(self.context.absolute_url())
 
     def do_zip(self):
         """ Zip all of the content in this location (context)"""
         if not _is_zippable(self):
-            message = _(u"This folder is too large to be zipped. Try zipping subfolders individually.")
+            message = _("This folder is too large to be zipped. Try zipping subfolders individually.")
             plone.api.portal.show_message(message, self.request, type="error")
             return self.request.response.redirect(self.context.absolute_url())
 
