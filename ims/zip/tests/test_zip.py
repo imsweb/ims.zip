@@ -12,8 +12,8 @@ from . import base
 
 PACKAGE_HOME = package_home(globals())
 
-PAGE_TEXT = '<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><body><h1>My page</h1>' \
-            '<p class="description">A test page</p><p>hi!</p></body></html>'
+PAGE_TEXT = b'<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /><body><h1>My page</h1>' \
+            b'<p class="description">A test page</p><p>hi!</p></body></html>'
 
 
 def load_file(name):
@@ -35,13 +35,13 @@ def load_image(name):
 class TestBasic(base.IntegrationTestCase):
     def create_file(self, parent):
         ob = api.content.create(container=parent, id='file1', type='File', file=load_file('file.txt'))
-        ob.file.filename = u'file.txt'
+        ob.file.filename = 'file.txt'
         self.file1 = ob
         return ob
 
     def create_image(self, parent):
         ob = api.content.create(container=parent, id='image1', type='Image', image=load_image('canoneye.jpg'))
-        ob.image.filename = u'canoneye.jpg'
+        ob.image.filename = 'canoneye.jpg'
         self.image1 = ob
         return ob
 

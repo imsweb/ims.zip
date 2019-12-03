@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '3.1.2'
+version = '4.0'
 
 setup(name='ims.zip',
       version=version,

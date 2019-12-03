@@ -1,4 +1,3 @@
-from Products.CMFPlone.utils import safe_unicode as su
 from plone.rfc822.interfaces import IPrimaryFieldInfo
 
 
@@ -47,7 +46,7 @@ class DocumentZip(AdapterBase):
             text = self.context.text.raw
 
         html = template % {'header': header, 'description': description, 'text': text}
-        return su(html).encode('utf-8')
+        return html
 
     def extension(self):
         return '.html'
