@@ -54,8 +54,14 @@
             name="default"
             title="ims.zip"
             directory="profiles/default"
-            description="Installs the ims.zip package"
-            provides="Products.GenericSetup.interfaces.EXTENSION"
-    />
+            description="Provides actions for zipping and unzipping "
+            provides="Products.GenericSetup.interfaces.EXTENSION"/>
+
+    <genericsetup:registerProfile
+            name="uninstall"
+            title="ims.zip [uninstall]"
+            directory="profiles/uninstall"
+            description="Provides actions for zipping and unzipping "
+            provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
 </configure>

@@ -1,0 +1,3 @@
+<registry>
+    <records interface="ims.zip.interfaces.IZipSettings" remove="true"/>
+</registry>
