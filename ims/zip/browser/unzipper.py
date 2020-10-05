@@ -38,7 +38,7 @@ class Unzipper(AutoExtensibleForm, form.Form):
         return self.request.response.redirect(self.context.absolute_url())
 
     def updateActions(self):
-        super(Unzipper, self).updateActions()
+        super().updateActions()
         list(self.actions.values())[0].addClass("context")
 
     def unzip(self, zipf, force_files=False):
