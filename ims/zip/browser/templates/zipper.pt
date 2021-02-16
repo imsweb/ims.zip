@@ -14,7 +14,7 @@
         </p>
         <p>
             This process may be slow for large folders, and will fail for very large folders. Please contact
-            <a tal:attributes="href string:mailto:${view/technical_support_address"
+            <a tal:attributes="href string:mailto:${view/technical_support_address}"
                tal:content="view/technical_support_address"/> for help
         </p>
 
