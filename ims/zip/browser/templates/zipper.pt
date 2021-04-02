@@ -50,6 +50,7 @@
                     'type': 'post',
                     'data': $(this).serialize()
                 })
+                $(this).hide().html('<p>Zip initiated. You will be emailed when this is complete.').fadeIn(200);
             })
         </script>
     </div>

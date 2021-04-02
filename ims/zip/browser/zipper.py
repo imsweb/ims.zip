@@ -32,7 +32,7 @@ def _get_size(view):
 
 
 def _is_small_zip(view):
-    return _get_size(view) <= 2 * 1024.0 * 1024.0 * 1024.0  # 2 GB
+    return _get_size(view) <= 1  # 2 * 1024.0 * 1024.0 * 1024.0  # 2 GB
 
 
 class ZipPrompt(BrowserView):
@@ -82,8 +82,10 @@ class Zipper(BrowserView):
             return zipfiles(content, base_path)
         else:
             fstream = zipfiles(content, base_path, zip64=True)
-            plone.api.content.create(type='File', container=plone.api.portal.get(), file=NamedBlobFile(fstream))
-            # thr = threading.Thread(target=zipfiles, args=(content, base_path, True))
-            # thr.start()
-            # self.request.response.setHeader('Content-Type', 'text/plain')
-            # return 'Your zip has been initiated and you will be emailed when it is finished.'
+            obj_id = f'{self.context.getId()}.zip'
+            container = plone.api.portal.get()
+            if obj_id not in container:
+                obj = plone.api.content.create(type='File', id=obj_id, container=container,
+                                               file=NamedBlobFile(fstream, filename=obj_id))
+            else:
+                obj = container[obj_id].file = NamedBlobFile(fstream, filename=obj_id)
