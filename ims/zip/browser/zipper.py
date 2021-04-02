@@ -1,9 +1,10 @@
 import zipfile
+from email.mime.text import MIMEText
 
 import plone.api
 from Products.Five.browser import BrowserView
-
 from plone.namedfile.file import NamedBlobFile
+
 from .. import _
 from ..interfaces import IZippable
 from ..zipper import zipfiles
@@ -89,3 +90,10 @@ class Zipper(BrowserView):
                                                file=NamedBlobFile(fstream, filename=obj_id))
             else:
                 obj = container[obj_id].file = NamedBlobFile(fstream, filename=obj_id)
+
+            msg = f"<p>Your zip file is ready for download at <a href=\"{obj.absolute_url()}/view\">{obj.title}</a>"
+            mail = plone.api.portal.get_tool('MailHost')
+            site_from = plone.api.portal.get_registry_record('plone.email_from_address')
+            portal_title = plone.api.portal.get_registry_record('plone.site_title')
+            mail.send(MIMEText(msg, 'html'), mto=plone.api.user.get_current().getProperty('email'), mfrom=site_from,
+                      subject=f'Zip file ready at {portal_title}')
