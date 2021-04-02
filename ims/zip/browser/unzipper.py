@@ -2,6 +2,7 @@ import mimetypes
 import os
 import zipfile
 from io import BytesIO
+from zope.lifecycleevent import modified
 
 import plone.api
 from Products.CMFPlone import utils
@@ -53,10 +54,7 @@ class Unzipper(AutoExtensibleForm, form.Form):
                     try:
                         curr = curr[folder]
                     except KeyError:
-                        curr.invokeFactory('Folder', folder)
-                        curr = curr[folder]
-                        curr.setTitle(folder)
-                        curr.reindexObject()
+                        curr = plone.api.content.create(type='Folder', id=folder, title=folder)
 
                 content_type = mimetypes.guess_type(file_name)[0] or ""
                 self.factory(file_name, content_type, stream, curr, force_files)
@@ -66,20 +64,20 @@ class Unzipper(AutoExtensibleForm, form.Form):
 
     def factory(self, name, content_type, data, container, force_files):
         ctr = plone.api.portal.get_tool('content_type_registry')
-        type_ = ctr.findTypeName(name.lower(), content_type, '')
-        if force_files and type_ not in ('File', 'Image'):
-            type_ = 'File'
-        elif not type_:
-            type_ = 'File'
+        portal_type = ctr.findTypeName(name.lower(), content_type, '')
+        if force_files and portal_type not in ('File', 'Image'):
+            portal_type = 'File'
+        elif not portal_type:
+            portal_type = 'File'
 
         normalizer = getUtility(IFileNameNormalizer)
         chooser = INameChooser(self.context)
         newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
 
-        obj = plone.api.content.create(container=container, type=type_, id=newid, title=name)
+        obj = plone.api.content.create(container=container, type=portal_type, id=newid, title=name)
         primary_field = IPrimaryFieldInfo(obj)
         if isinstance(primary_field.field, RichText):
             setattr(obj, primary_field.fieldname, RichTextValue(data))
         else:
             setattr(obj, primary_field.fieldname, primary_field.field._type(data, filename=utils.safe_unicode(name)))
-        obj.reindexObject()
+        modified(obj)
