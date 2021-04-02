@@ -32,7 +32,7 @@ def _get_size(view):
 
 
 def _is_small_zip(view):
-    return _get_size(view) <= 1  # 2 * 1024.0 * 1024.0 * 1024.0  # 2 GB
+    return _get_size(view) <= 4 * 1024.0 * 1024.0 * 1024.0  # 4 GB
 
 
 class ZipPrompt(BrowserView):
