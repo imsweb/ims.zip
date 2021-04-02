@@ -3,6 +3,7 @@ import zipfile
 import plone.api
 from Products.Five.browser import BrowserView
 
+from plone.namedfile.file import NamedBlobFile
 from .. import _
 from ..interfaces import IZippable
 from ..zipper import zipfiles
@@ -80,7 +81,8 @@ class Zipper(BrowserView):
             self.request.response.setHeader('Content-disposition', 'attachment;filename=%s.zip' % self.context.getId())
             return zipfiles(content, base_path)
         else:
-            return zipfiles(content, base_path, zip64=True)
+            fstream = zipfiles(content, base_path, zip64=True)
+            plone.api.content.create(type='File', container=plone.api.portal.get(), file=NamedBlobFile(fstream))
             # thr = threading.Thread(target=zipfiles, args=(content, base_path, True))
             # thr.start()
             # self.request.response.setHeader('Content-Type', 'text/plain')

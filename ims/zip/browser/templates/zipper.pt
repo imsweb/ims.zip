@@ -3,8 +3,8 @@
       xmlns:metal="http://xml.zope.org/namespaces/metal"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
-      metal:use-macro="here/main_template/macros/master"
-      i18n:domain="plone">
+         metal:use-macro="here/main_template/macros/master"
+         i18n:domain="plone">
 
 <body>
 <div metal:fill-slot="main">
@@ -15,13 +15,15 @@
         <p>
             This process may be slow for large folders. Please contact
             <a tal:attributes="href string:mailto:${view/technical_support_address}"
-               tal:content="view/technical_support_address"/> for help
+                     tal:content="view/technical_support_address"/> for help
         </p>
 
-        <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
-            <i class="glyphicon glyphicon-download-alt"></i>
-            Download
-        </a>
+        <form id="ims-zip-form" tal:attributes="action string:${here/absolute_url}/@@zipconfirm" method="POST">
+            <button type="submit" class="btn btn-default">
+                <i class="glyphicon glyphicon-download-alt"></i>
+                Download
+            </button>
+        </form>
         <small>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</small>
     </div>
     <div tal:condition="not:view/small_zip">
@@ -29,12 +31,27 @@
             This feature will create a compressed zip file of all content within this folder and its sub-folders.
         </p>
         <div class="portalMessage warning">This will create a very large file and will take some time to compress.</div>
-        <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm?zip64=True">
-            <i class="glyphicon glyphicon-download-alt"></i>
-            Download
-        </a>
+
+        <form id="ims-zip-form" tal:attributes="action string:${here/absolute_url}/@@zipconfirm" method="POST">
+            <input type="hidden" name="zip64" value="1"/>
+            <button type="submit" class="btn btn-default">
+                <i class="glyphicon glyphicon-download-alt"></i>
+                Download
+            </button>
+        </form>
 
         <p>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</p>
+
+        <script type="text/javascript">
+            $('#ims-zip-form').submit(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    'url': $(this).attr('action'),
+                    'type': 'post',
+                    'data': $(this).serialize()
+                })
+            })
+        </script>
     </div>
 </div>
 </body>
