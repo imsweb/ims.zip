@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '4.2'
+version = '4.2.1'
 
 setup(name='ims.zip',
       version=version,
@@ -15,7 +15,7 @@ setup(name='ims.zip',
       keywords='',
       author='Eric Wohnlich',
       author_email='wohnlice@imsweb.com',
-      url='https://git.imsweb.com/plone/ims.zip',
+      url='https://github.com/imsweb/ims.zip',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['ims'],

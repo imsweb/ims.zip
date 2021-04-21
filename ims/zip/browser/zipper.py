@@ -57,7 +57,7 @@ class Zipper(BrowserView):
 
     def technical_support_address(self):
         return plone.api.portal.get_registry_record('ims.zip.interfaces.IZipSettings.technical_support_address') or \
-               plone.api.portal.get_registry_record('plone.email_from_address')
+            plone.api.portal.get_registry_record('plone.email_from_address')
 
     def __call__(self):
         try:
