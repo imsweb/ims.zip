@@ -30,4 +30,7 @@ setup(name='ims.zip',
       [z3c.autoinclude.plugin]
       target = plone
       """,
+      extras_require={
+          'test': ['plone.app.testing', 'plone.mocktestcase', 'formencode'],
+      },
       )
