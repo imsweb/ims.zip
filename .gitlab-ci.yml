@@ -24,7 +24,7 @@ plone-tests:
   script:
     - echo "running test on version:"
     - python setup.py --version
-    - /builds/$CI_PROJECT_PATH/bin/test -v -s $CI_PROJECT_NAME
+    - ./bin/test -v -s $CI_PROJECT_NAME
 
 code-analysis:
   tags:
@@ -33,4 +33,4 @@ code-analysis:
   script:
     - echo "running test on version:"
     - python setup.py --version
-    - /builds/$CI_PROJECT_PATH/bin/code-analysis .
+    - ./bin/code-analysis .
