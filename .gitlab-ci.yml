@@ -56,7 +56,6 @@ pages:
     - master
   dependencies:
     - coverage
-    - make_docs
   script:
     - mkdir -p public/
     - mv htmlcov/ public/coverage
