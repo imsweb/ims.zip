@@ -1,15 +1,13 @@
 from setuptools import setup, find_packages
 
-version = '4.1.2'
+version = '5.0'
 
 setup(name='ims.zip',
       version=version,
       description="zip and unzip folder contents",
       classifiers=[
-          "Framework :: Plone :: 5.0",
-          "Framework :: Plone :: 5.1",
+          "Framework :: Plone :: 6.0",
           "Programming Language :: Python",
-          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3"
       ],
       keywords='',

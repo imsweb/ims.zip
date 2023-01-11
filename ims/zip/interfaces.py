@@ -25,7 +25,7 @@ class IZipFolder(Interface):
 class IUnzipForm(model.Schema):
     file = NamedFile(
         title=_("Zip File"),
-        required=False,
+        required=True,
     )
     force_files = schema.Bool(
         title=_("Force upload as Files"),

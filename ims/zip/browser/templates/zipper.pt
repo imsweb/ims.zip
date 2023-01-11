@@ -14,24 +14,26 @@
         </p>
         <p>
             This process may be slow for large folders, and will fail for very large folders. Please contact
-            <a tal:attributes="href string:mailto:${view/technical_support_address}"
-               tal:content="view/technical_support_address"/> for help
+            <a href="mailto:${view/technical_support_address}">
+                ${view/technical_support_address}
+            </a> for help
         </p>
 
-        <a tal:attributes="href string:${here/absolute_url}/@@zipconfirm">
+        <a href="${context/absolute_url}/@@zipconfirm">
             <i class="glyphicon glyphicon-download-alt"></i>
             Download
         </a>
-        <small>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</small>
+        <small>(pre-zipped estimated size: <span>${view/size_estimate}</span>)</small>
     </div>
     <div tal:condition="not:view/is_zippable">
         <p>
             Sorry, this folder exceeds the allowed size for zip files. Please try zipping sub-folders individually or
-            contact <a tal:attributes="href string:mailto:${view/technical_support_address}"
-                       tal:content="view/technical_support_address"/> for help.
+            contact <a href="mailto:${view/technical_support_address}">
+                ${view/technical_support_address}
+        </a> for help.
         </p>
 
-        <p>(pre-zipped estimated size: <span tal:content="view/size_estimate"/>)</p>
+        <p>(pre-zipped estimated size: <span>${view/size_estimate}</span>)</p>
     </div>
 </div>
 </body>

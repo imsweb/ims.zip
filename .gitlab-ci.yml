@@ -1,36 +1,83 @@
-image: cr.git.imsweb.com/plone/buildout-configs/plone-testrunner:latest
+image: cr.git.imsweb.com/plone/imsplone/plone-ci:latest
 stages:
-- test
+  - test
+  - analysis
+  - coverage
+  - deploy
 
 
 before_script:
-  - echo $CI_PROJECT_NAMESPACE
-  - echo $CI_REGISTRY
-  - echo $CI_PROJECT_PATH
-  - echo "Activating Source"
   - source /plone5/instance/bin/activate
-  - cp -a /plone5/instance/.credentials ~/
-  - chmod 700 ~/.credentials
-  - pip install python-ldap
-  - echo "Install Successful"
-  - echo "Running buildout"
   - buildout -c gitlab-ci.cfg
-  - echo "buildout successful"
 
 plone-tests:
-  tags:
-    - openshift
   stage: test
   script:
     - echo "running test on version:"
     - python setup.py --version
-    - /builds/$CI_PROJECT_PATH/bin/test -v -s $CI_PROJECT_NAME
+    - ./bin/test -v -s $CI_PROJECT_NAME
 
 code-analysis:
-  tags:
-    - openshift
-  stage: test
+  stage: analysis
   script:
-    - echo "running test on version:"
-    - python setup.py --version
-    - /builds/$CI_PROJECT_PATH/bin/code-analysis .
+    - ./bin/code-analysis ims/
+
+bandit:
+  stage: analysis
+  script:
+    - pip install bandit
+    - bandit -r ims/ --ini .bandit
+
+coverage:
+  stage: coverage
+  script:
+    - bin/coverage run bin/test -s $CI_PROJECT_NAME
+    - bin/coverage html
+    - bin/coverage report
+  when: on_success
+
+  coverage: '/TOTAL\s+\d+\s+\d+\s+(\d+\%)/'
+  artifacts:
+    paths:
+      - htmlcov
+
+audit:
+  stage: analysis
+  allow_failure: true
+  script:
+    - pip install --upgrade pip
+    - pip install --upgrade setuptools
+    - pip install jake
+    - jake ddt
+
+pages:
+  stage: deploy
+  only:
+    - master
+  dependencies:
+    - coverage
+    - make_docs
+  script:
+    - mkdir -p public/
+    - mv htmlcov/ public/coverage
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+
+release:
+  stage: deploy
+  only:
+    - master
+  script:
+    - export PKG_VERSION=$(cat VERSION.txt)
+    - echo ${GITLAB_USER_EMAIL}
+    - echo ${GITLAB_USER_NAME}
+    - echo ${CI_PROJECT_PATH}
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git tag -a v${PKG_VERSION} -m "creating tag v${PKG_VERSION}"
+    - git push https://oauth2:${GITLAB_ACCESS_TOKEN}@git.imsweb.com/${CI_PROJECT_PATH}.git v${PKG_VERSION}
+    - pip install wheel
+    - python ./setup.py sdist bdist_wheel
+    - rsync -avz --rsh="/usr/bin/sshpass -p ${WEB_ST_03_PASSWORD} ssh -l ${WEB_ST_03_USERNAME} -o StrictHostKeyChecking=no" ./dist/* web-st-03.imsweb.com:/prj/web2/intranetapps/htdocs/pypi
