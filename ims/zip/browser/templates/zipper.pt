@@ -4,6 +4,7 @@
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
       lang="en"
       metal:use-macro="here/main_template/macros/master"
+      tal:define="icons python:context.restrictedTraverse('@@iconresolver')"
       i18n:domain="plone">
 
 <body>
@@ -20,7 +21,7 @@
         </p>
 
         <a href="${context/absolute_url}/@@zipconfirm">
-            <i class="glyphicon glyphicon-download-alt"></i>
+            <tal:icon tal:replace="structure python:icons.tag('download', tag_alt='Download')" />
             Download
         </a>
         <small>(pre-zipped estimated size: <span>${view/size_estimate}</span>)</small>

@@ -64,4 +64,19 @@
             description="Provides actions for zipping and unzipping "
             provides="Products.GenericSetup.interfaces.EXTENSION"/>
 
+    <genericsetup:registerProfile
+            name="upgrade to plone 6"
+            title="ims.zip"
+            directory="profiles/upgrade_1"
+            description="Adds icons"
+            provides="Products.GenericSetup.interfaces.EXTENSION"/>
+
+    <genericsetup:upgradeStep
+            title="Upgrade to 5"
+            description="Adds icons"
+            source="*"
+            destination="1"
+            handler=".upgrades.upgrade_1"
+            profile="ims.zip:default"/>
+
 </configure>

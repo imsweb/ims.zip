@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ims.zip"
+version = "4.0"
+requires-python = ">=3.8"
+description = "z3c form widgets"
+classifiers = [
+    "Framework :: Plone :: 6.0",
+    "Programming Language :: Python",
+]
+authors = [
+    { name = "Eric Wohnlich", email = "wohnlice@imsweb.com" }
+]
+license = { text = "GPL" }
+
+dependencies = [
+    "plone>=6.0",
+]
+
+[project.urls]
+homepage = "https://github.com/imsweb/ims.zip"
+
+[project.optional-dependencies]
+test = ["plone.app.testing", "plone.mocktestcase", "formencode"]
+
+[project.entry-points."plone.autoinclude.plugin"]
+target = "plone"
+
+[tool.bandit]
+exclude_dirs = ["*/tests/*"]
+skips = ["B313", "B314", "B315", "B316", "B317", "B318", "B319", "B320", "B410", "B404", "B603"]
+
+[tool.coverage.report]
+include = ["ims/zip/*"]
+omit = ["venv", "*/test*", "*upgrades.py"]
+
+[tool.setuptools.packages.find]
+include = ["ims"]
+
+[tool.flake8]
+max-line-length = 120
