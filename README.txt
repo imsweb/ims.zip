@@ -2,5 +2,4 @@ Introduction
 ============
 
 
-
-This product may contain traces of nuts.
+Zips and unzips folders for Plone
