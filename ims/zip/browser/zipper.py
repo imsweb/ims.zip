@@ -1,13 +1,13 @@
-import os
 import zipfile
-from io import BytesIO
+from email.mime.text import MIMEText
 
 import plone.api
 from Products.Five.browser import BrowserView
-from zope.component import queryAdapter
+from plone.namedfile.file import NamedBlobFile
 
 from .. import _
 from ..interfaces import IZippable
+from ..zipper import zipfiles
 
 
 def convert_to_bytes(size):
@@ -32,8 +32,8 @@ def _get_size(view):
     return sum([b.getObjSize and convert_to_bytes(b.getObjSize) or 0 for b in content])
 
 
-def _is_zippable(view):
-    return _get_size(view) <= 2 * 1024.0 * 1024.0 * 1024.0  # 2 GB
+def _is_small_zip(view):
+    return _get_size(view) <= 4 * 1024.0 * 1024.0 * 1024.0  # 4 GB
 
 
 class ZipPrompt(BrowserView):
@@ -45,8 +45,8 @@ class ZipPrompt(BrowserView):
     def get_size(self):
         return _get_size(self)
 
-    def is_zippable(self):
-        return _is_zippable(self)
+    def small_zip(self):
+        return _is_small_zip(self)
 
     def size_estimate(self):
         return '%.2f MB' % (_get_size(self) / 1024.0 / 1024)
@@ -56,12 +56,11 @@ class Zipper(BrowserView):
     """ Zips content to a temp file """
 
     def technical_support_address(self):
-        return plone.api.portal.get_registry_record('ims.zip.interfaces.IZipSettings.technical_support_address')
+        return plone.api.portal.get_registry_record('ims.zip.interfaces.IZipSettings.technical_support_address') or \
+               plone.api.portal.get_registry_record('plone.email_from_address')
 
     def __call__(self):
         try:
-            self.request.response.setHeader('Content-Type', 'application/zip')
-            self.request.response.setHeader('Content-disposition', 'attachment;filename=%s.zip' % self.context.getId())
             return self.do_zip()
         except zipfile.LargeZipFile:
             message = _("This folder is too large to be zipped. Try zipping subfolders individually.")
@@ -70,37 +69,31 @@ class Zipper(BrowserView):
 
     def do_zip(self):
         """ Zip all of the content in this location (context)"""
-        if not _is_zippable(self):
-            message = _("This folder is too large to be zipped. Try zipping subfolders individually.")
-            plone.api.portal.show_message(message, self.request, type="error")
-            return self.request.response.redirect(self.context.absolute_url())
+        if not _is_small_zip(self):
+            # force this, whether it was passed in the request or not
+            self.request['zip64'] = 1
 
-        stream = BytesIO()
-        self.zipfiles(stream)
-        return stream.getvalue()
-
-    def zipfiles(self, fstream):
-        """Return the path and file stream of all content we find here"""
         base_path = '/'.join(self.context.getPhysicalPath()) + '/'  # the path in the ZCatalog
         cat = plone.api.portal.get_tool('portal_catalog')
-
-        zipper = zipfile.ZipFile(fstream, 'w', zipfile.ZIP_DEFLATED)
         ptypes = cat.uniqueValuesFor('portal_type')
-
         content = cat(path=base_path, object_provides=IZippable.__identifier__, portal_type=ptypes)
-        for c in content:
-            rel_path = c.getPath().split(base_path)[1:] or [c.getId]  # the latter if the root object has an adapter
-            if rel_path:
-                obj = c.getObject()
-                zip_path = os.path.join(*rel_path)
-                adapter = queryAdapter(obj, IZippable)
-                stream = adapter.zippable()
-                if stream:
-                    ext = adapter.extension()
-                    component_name = zip_path + ext
-                    zipper.writestr(component_name, stream)
-                    created = obj.created()
-                    zipper.NameToInfo[component_name].date_time = (
-                        created.year(), created.month(), created.day(), created.hour(), created.minute(),
-                        int(created.second()))
-        zipper.close()
+        if not self.request.get('zip64'):
+            self.request.response.setHeader('Content-Type', 'application/zip')
+            self.request.response.setHeader('Content-disposition', 'attachment;filename=%s.zip' % self.context.getId())
+            return zipfiles(content, base_path)
+        else:
+            fstream = zipfiles(content, base_path, zip64=True)
+            obj_id = f'{self.context.getId()}.zip'
+            container = plone.api.portal.get()
+            if obj_id not in container:
+                obj = plone.api.content.create(type='File', id=obj_id, container=container,
+                                               file=NamedBlobFile(fstream, filename=obj_id))
+            else:
+                obj = container[obj_id].file = NamedBlobFile(fstream, filename=obj_id)
+
+            msg = f"<p>Your zip file is ready for download at <a href=\"{obj.absolute_url()}/view\">{obj.title}</a>"
+            mail = plone.api.portal.get_tool('MailHost')
+            site_from = plone.api.portal.get_registry_record('plone.email_from_address')
+            portal_title = plone.api.portal.get_registry_record('plone.site_title')
+            mail.send(MIMEText(msg, 'html'), mto=plone.api.user.get_current().getProperty('email'), mfrom=site_from,
+                      subject=f'Zip file ready at {portal_title}')
