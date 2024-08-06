@@ -51,13 +51,24 @@ class ZipPrompt(BrowserView):
     def size_estimate(self):
         return '%.2f MB' % (_get_size(self) / 1024.0 / 1024)
 
+    @property
+    def base_path(self):
+        return '/'.join(self.context.getPhysicalPath()) + '/'  # the path in the ZCatalog
 
-class Zipper(BrowserView):
+    def path_size(self):
+        _max = max([len(b.getPath()) for b in self.contents])
+        return _max - len(self.base_path)
+
+    @property
+    def contents(self):
+        """ returns catalog brains """
+        cat = plone.api.portal.get_tool('portal_catalog')
+        ptypes = cat.uniqueValuesFor('portal_type')
+        return cat(path=self.base_path, object_provides=IZippable.__identifier__, portal_type=ptypes)
+
+
+class Zipper(ZipPrompt):
     """ Zips content to a temp file """
-
-    def technical_support_address(self):
-        return plone.api.portal.get_registry_record('ims.zip.interfaces.IZipSettings.technical_support_address') or \
-               plone.api.portal.get_registry_record('plone.email_from_address')
 
     def __call__(self):
         try:
@@ -73,16 +84,12 @@ class Zipper(BrowserView):
             # force this, whether it was passed in the request or not
             self.request['zip64'] = 1
 
-        base_path = '/'.join(self.context.getPhysicalPath()) + '/'  # the path in the ZCatalog
-        cat = plone.api.portal.get_tool('portal_catalog')
-        ptypes = cat.uniqueValuesFor('portal_type')
-        content = cat(path=base_path, object_provides=IZippable.__identifier__, portal_type=ptypes)
         if not self.request.get('zip64'):
             self.request.response.setHeader('Content-Type', 'application/zip')
             self.request.response.setHeader('Content-disposition', 'attachment;filename=%s.zip' % self.context.getId())
-            return zipfiles(content, base_path)
+            return zipfiles(self.contents, self.base_path)
         else:
-            fstream = zipfiles(content, base_path, zip64=True)
+            fstream = zipfiles(self.contents, self.base_path, zip64=True)
             obj_id = f'{self.context.getId()}.zip'
             container = plone.api.portal.get()
             if obj_id not in container:
