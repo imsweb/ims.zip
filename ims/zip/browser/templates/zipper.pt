@@ -15,10 +15,10 @@
         </p>
         <div class="alert alert-warning">
             <strong>Windows Path Size Limit</strong>
-            Windows has a maximum path size limit of 256 characters. The maximum path size in this zip file is
+            Windows has a maximum total path size limit of 256 characters. The maximum path size in this zip file is
             ${view/path_size} characters. The total path size will be this number <i>plus</i> the length of the folder
-            path to which you extract the files. Consider renaming the short name of folders and files if this needs
-            to be shorter.
+            path to which you extract the files. Consider renaming the short name of folders and files if the total
+            path size needs to be shorter.
         </div>
         <p>
             This process may be slow for large folders, and will fail for very large folders. Please contact
