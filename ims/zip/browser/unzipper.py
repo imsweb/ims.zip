@@ -38,10 +38,6 @@ class Unzipper(AutoExtensibleForm, form.Form):
         plone.api.portal.show_message(_("Your content has been imported."), self.request, type="info")
         return self.request.response.redirect(self.context.absolute_url())
 
-    def updateActions(self):
-        super().updateActions()
-        list(self.actions.values())[0].addClass("context")
-
     def unzip(self, zipf, force_files=False):
         zipper = zipfile.ZipFile(BytesIO(zipf.data), 'r')
 
