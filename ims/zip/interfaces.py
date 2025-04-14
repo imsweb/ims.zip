@@ -8,18 +8,18 @@ from . import _
 
 
 class IZipper(Interface):
-    """ Zipper utility """
+    """Zipper utility"""
 
 
 class IZippable(Interface):
-    """ Defines what can be zipped """
+    """Defines what can be zipped"""
 
     def get_zippable(self):
-        """ Return the zippable stream of this content """
+        """Return the zippable stream of this content"""
 
 
 class IZipFolder(Interface):
-    """ Locations where you can zip content """
+    """Locations where you can zip content"""
 
 
 class IUnzipForm(model.Schema):
@@ -35,6 +35,4 @@ class IUnzipForm(model.Schema):
 
 
 class IZipSettings(model.Schema):
-    technical_support_address = schema.TextLine(
-        title=_("Technical Support name")
-    )
+    technical_support_address = schema.TextLine(title=_("Technical Support name"))

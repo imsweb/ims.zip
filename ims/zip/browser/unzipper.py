@@ -4,7 +4,7 @@ import zipfile
 from io import BytesIO
 from zope.lifecycleevent import modified
 
-import plone.api
+from plone import api
 from Products.CMFPlone import utils
 from plone.app.textfield import RichText
 from plone.app.textfield.value import RichTextValue
@@ -24,57 +24,51 @@ class Unzipper(AutoExtensibleForm, form.Form):
 
     schema = IUnzipForm
 
-    @button.buttonAndHandler(_('Unzip'))
+    @button.buttonAndHandler(_("Unzip"))
     def unzipper(self, action):
-        """ unzip contents """
+        """unzip contents"""
         data, errors = self.extractData()
         if errors:
             self.status = self.formErrorsMessage
             return
-        zipf = data['file']
-        force_files = data['force_files']
+        zipf = data["file"]
+        force_files = data["force_files"]
         self.unzip(zipf, force_files=force_files)
 
-        plone.api.portal.show_message(_("Your content has been imported."), self.request, type="info")
+        api.portal.show_message(_("Your content has been imported."), self.request, type="info")
         return self.request.response.redirect(self.context.absolute_url())
 
-    def updateActions(self):
-        super().updateActions()
-        list(self.actions.values())[0].addClass("context")
-
     def unzip(self, zipf, force_files=False):
-        zipper = zipfile.ZipFile(BytesIO(zipf.data), 'r')
+        zipper = zipfile.ZipFile(BytesIO(zipf.data), "r")
 
         for name in zipper.namelist():
             path, file_name = os.path.split(name)
             if file_name:
                 stream = zipper.read(name)
                 curr = self.context
-                for folder in [f for f in path.split('/') if f]:
+                for folder in [f for f in path.split("/") if f]:
                     try:
                         curr = curr[folder]
                     except KeyError:
-                        curr = plone.api.content.create(type='Folder', container=curr, id=folder, title=folder)
+                        curr = api.content.create(type="Folder", container=curr, id=folder, title=folder)
 
                 content_type = mimetypes.guess_type(file_name)[0] or ""
                 self.factory(file_name, content_type, stream, curr, force_files)
 
-                plone.api.portal.show_message(_('Zip file imported'), self.request, type="info")
+                api.portal.show_message(_("Zip file imported"), self.request, type="info")
         self.request.response.redirect(self.context.absolute_url())
 
     def factory(self, name, content_type, data, container, force_files):
-        ctr = plone.api.portal.get_tool('content_type_registry')
-        portal_type = ctr.findTypeName(name.lower(), content_type, '')
-        if force_files and portal_type not in ('File', 'Image'):
-            portal_type = 'File'
-        elif not portal_type:
-            portal_type = 'File'
+        ctr = api.portal.get_tool("content_type_registry")
+        portal_type = ctr.findTypeName(name.lower(), content_type, "")
+        if (force_files and portal_type not in ("File", "Image")) or not portal_type:
+            portal_type = "File"
 
         normalizer = getUtility(IFileNameNormalizer)
         chooser = INameChooser(self.context)
         newid = chooser.chooseName(normalizer.normalize(name), self.context.aq_parent)
 
-        obj = plone.api.content.create(container=container, type=portal_type, id=newid, title=name)
+        obj = api.content.create(container=container, type=portal_type, id=newid, title=name)
         primary_field = IPrimaryFieldInfo(obj)
         if isinstance(primary_field.field, RichText):
             setattr(obj, primary_field.fieldname, RichTextValue(data))
