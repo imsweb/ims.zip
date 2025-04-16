@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "ims.zip"
-version = "6.0.1"
+version = "6.2"
 requires-python = ">=3.8"
-description = "z3c form widgets"
+description = "Plone zip and unzip content"
 classifiers = [
     "Framework :: Plone :: 6.0",
     "Programming Language :: Python",
